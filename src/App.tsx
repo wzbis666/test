@@ -33,6 +33,17 @@ function AppInner() {
   });
   const notificationTimers = useRef<Map<string, number>>(new Map());
 
+  // Hide splash screen after first render (not timer-based)
+  useEffect(() => {
+    const splash = document.getElementById('splash');
+    if (splash) {
+      requestAnimationFrame(() => {
+        splash.classList.add('hide');
+        setTimeout(() => splash.remove(), 400);
+      });
+    }
+  }, []);
+
   useEffect(() => {
     requestNotificationPermission();
   }, []);
