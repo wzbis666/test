@@ -1,6 +1,7 @@
 import { TAG_CONFIG } from '../../types';
 import type { Event } from '../../types';
 import { timeToMinutes } from '../../utils/date';
+import Icon from '../Icon';
 import styles from './EventCard.module.css';
 
 interface EventCardProps {
@@ -33,7 +34,7 @@ export default function EventCard({ event, onClick, style, compact = false, onDr
       </div>
       <div className={styles.title}>{event.title}</div>
       {!compact && event.note && <div className={styles.note}>{event.note}</div>}
-      <span className={styles.tagIcon}>{tag.icon}</span>
+      <span className={styles.tagIcon}><Icon name={tag.icon} size={12} /></span>
     </div>
   );
 }

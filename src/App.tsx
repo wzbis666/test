@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { AppProvider, useAppContext } from './context/AppContext';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useEvents } from './hooks/useEvents';
@@ -189,8 +190,19 @@ function AppInner() {
       <Header theme={theme} onToggleTheme={toggleTheme} onExport={handleExport} onImport={handleImport} />
       <div className="main-layout">
         <MiniCalendar />
-        <main className="view-container" key={state.currentView}>
-          {renderView()}
+        <main className="view-container">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={state.currentView}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: .18, ease: 'easeOut' }}
+              style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+            >
+              {renderView()}
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
       {modal.open && (

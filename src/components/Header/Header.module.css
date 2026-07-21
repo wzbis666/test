@@ -90,9 +90,9 @@
 }
 
 .searchIcon {
-  font-size: 12px;
-  opacity: .5;
+  opacity: .45;
   flex-shrink: 0;
+  color: var(--color-text-muted);
 }
 
 .searchInput {

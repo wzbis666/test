@@ -27,11 +27,8 @@
 }
 
 .quickAddIcon {
-  font-size: 22px;
-  font-weight: 300;
   color: var(--color-primary);
-  opacity: .5;
-  line-height: 1;
+  opacity: .45;
   flex-shrink: 0;
 }
 
@@ -176,13 +173,9 @@
 
 /* Checkbox */
 .checkbox {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
   color: var(--color-text-muted);
   flex-shrink: 0;
   transition: all .15s;
@@ -244,10 +237,10 @@
 }
 
 .tagIcon {
-  font-size: 16px;
   flex-shrink: 0;
   align-self: center;
-  line-height: 1;
+  color: var(--color-text-muted);
+  display: flex;
 }
 
 .eventBody {
@@ -369,7 +362,7 @@
   border-radius: var(--radius-xl);
   opacity: .5;
 }
-.emptyIcon { font-size: 56px; margin-bottom: 20px; filter: grayscale(.3); }
+.emptyIcon { margin-bottom: 20px; color: var(--color-primary); opacity: .25; }
 .emptyTitle { font-size: var(--font-size-lg); font-weight: 600; color: var(--color-text); margin-bottom: 6px; position: relative; }
 .emptyHint { font-size: var(--font-size-sm); color: var(--color-text-muted); max-width: 260px; position: relative; }
 
@@ -404,12 +397,12 @@
 }
 
 .fabIcon {
-  font-size: 28px;
-  font-weight: 300;
   color: #FBFAF7;
-  line-height: 1;
   position: relative;
   z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ripple on click */

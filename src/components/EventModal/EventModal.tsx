@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { TAG_CONFIG, RECURRENCE_LABELS, REMINDER_OPTIONS } from '../../types';
 import type { TagColor, RecurrenceType, Event } from '../../types';
+import Icon from '../Icon';
 import styles from './EventModal.module.css';
 
 interface EventModalProps {
@@ -183,7 +184,7 @@ export default function EventModal({ date, startTime, event, onSave, onDelete, o
                       }}
                       onClick={() => setTag(key)}
                     >
-                      <span className={styles.tagEmoji}>{cfg.icon}</span>
+                      <Icon name={cfg.icon} size={13} />
                       {cfg.label}
                     </button>
                   )

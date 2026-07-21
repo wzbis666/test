@@ -45,12 +45,12 @@ export type AppAction =
   | { type: 'SET_FILTER_TAG'; payload: TagColor | 'all' };
 
 export const TAG_CONFIG: Record<TagColor, { label: string; icon: string; color: string; bg: string; border: string }> = {
-  red:    { label: '工作', icon: '💼', color: '#E5484D', bg: '#FEF0F0', border: '#FDE0E0' },
-  orange: { label: '紧急', icon: '🔥', color: '#ED7A26', bg: '#FEF6EE', border: '#FDE8D0' },
-  blue:   { label: '会议', icon: '💬', color: '#3B82F6', bg: '#EEF4FF', border: '#DCE8FD' },
-  green:  { label: '个人', icon: '🏠', color: '#30A46C', bg: '#EDF8F2', border: '#D4EDDF' },
-  purple: { label: '健康', icon: '❤️', color: '#8B5CF6', bg: '#F5F0FE', border: '#EBE0FD' },
-  gray:   { label: '其他', icon: '📌', color: '#78746D', bg: '#F3F1EC', border: '#E6E3DD' },
+  red:    { label: '工作', icon: 'briefcase', color: '#E5484D', bg: '#FEF0F0', border: '#FDE0E0' },
+  orange: { label: '紧急', icon: 'flame',      color: '#ED7A26', bg: '#FEF6EE', border: '#FDE8D0' },
+  blue:   { label: '会议', icon: 'message-square', color: '#3B82F6', bg: '#EEF4FF', border: '#DCE8FD' },
+  green:  { label: '个人', icon: 'home',       color: '#30A46C', bg: '#EDF8F2', border: '#D4EDDF' },
+  purple: { label: '健康', icon: 'heart',      color: '#8B5CF6', bg: '#F5F0FE', border: '#EBE0FD' },
+  gray:   { label: '其他', icon: 'pin',        color: '#78746D', bg: '#F3F1EC', border: '#E6E3DD' },
 };
 
 export const RECURRENCE_LABELS: Record<RecurrenceType, string> = {

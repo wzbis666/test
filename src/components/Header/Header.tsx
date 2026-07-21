@@ -3,6 +3,7 @@ import { useAppContext } from '../../context/AppContext';
 import { formatDisplay, parseDate, today } from '../../utils/date';
 import { TAG_CONFIG } from '../../types';
 import type { ViewType, TagColor } from '../../types';
+import Icon from '../Icon';
 import styles from './Header.module.css';
 
 interface HeaderProps {
@@ -39,42 +40,47 @@ export default function Header({ theme, onToggleTheme, onExport, onImport }: Hea
     <header className={styles.header}>
       <div className={styles.left}>
         <h1 className={styles.logo}>
-            <svg className={styles.logoIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <rect x="2" y="3" width="16" height="15" rx="3" stroke="currentColor" strokeWidth="1.5"/>
-              <path d="M2 8h16" stroke="currentColor" strokeWidth="1.5"/>
-              <line x1="6" y1="1" x2="6" y2="5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-              <line x1="14" y1="1" x2="14" y2="5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-              <circle cx="7" cy="12" r="1.2" fill="var(--accent)"/>
-              <circle cx="10" cy="12" r="1.2" fill="var(--accent)"/>
-              <rect x="6.5" y="14.5" width="3" height="2" rx="1" fill="var(--accent)"/>
-            </svg>
-            DayPlan
-          </h1>
+          <svg className={styles.logoIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <rect x="2" y="3" width="16" height="15" rx="3" stroke="currentColor" strokeWidth="1.5"/>
+            <path d="M2 8h16" stroke="currentColor" strokeWidth="1.5"/>
+            <line x1="6" y1="1" x2="6" y2="5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            <line x1="14" y1="1" x2="14" y2="5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            <circle cx="7" cy="12" r="1.2" fill="var(--accent)"/>
+            <circle cx="10" cy="12" r="1.2" fill="var(--accent)"/>
+            <rect x="6.5" y="14.5" width="3" height="2" rx="1" fill="var(--accent)"/>
+          </svg>
+          DayPlan
+        </h1>
         <div className={styles.actions}>
-          {/* Theme */}
           <button className={styles.iconBtn} onClick={onToggleTheme} title={theme === 'light' ? '暗黑模式' : '浅色模式'}>
-            {theme === 'light' ? '🌙' : '☀️'}
+            <Icon name={theme === 'light' ? 'moon' : 'sun'} size={16} />
           </button>
-          {/* Export */}
-          <button className={styles.iconBtn} onClick={onExport} title="导出数据">📥</button>
-          {/* Import */}
-          <button className={styles.iconBtn} onClick={() => fileRef.current?.click()} title="导入数据">📤</button>
+          <button className={styles.iconBtn} onClick={onExport} title="导出数据">
+            <Icon name="download" size={16} />
+          </button>
+          <button className={styles.iconBtn} onClick={() => fileRef.current?.click()} title="导入数据">
+            <Icon name="upload" size={16} />
+          </button>
           <input ref={fileRef} type="file" accept=".json" style={{ display: 'none' }} onChange={handleImport} />
         </div>
       </div>
 
       <div className={styles.center}>
-        <button className={styles.navBtn} onClick={goPrev} aria-label="前一天">‹</button>
+        <button className={styles.navBtn} onClick={goPrev} aria-label="前一天">
+          <Icon name="chevron-left" size={18} />
+        </button>
         <button className={styles.todayBtn} onClick={goToday}>今天</button>
         <span className={styles.dateDisplay} onClick={goToday}>
           {formatDisplay(currentDate)}
         </span>
-        <button className={styles.navBtn} onClick={goNext} aria-label="后一天">›</button>
+        <button className={styles.navBtn} onClick={goNext} aria-label="后一天">
+          <Icon name="chevron-right" size={18} />
+        </button>
       </div>
 
       <div className={styles.right}>
         <div className={`${styles.searchWrap} ${hasFilter ? styles.searchActive : ''}`}>
-          <span className={styles.searchIcon}>🔍</span>
+          <Icon name="search" size={13} className={styles.searchIcon} />
           <input
             data-search
             className={styles.searchInput}
@@ -85,7 +91,7 @@ export default function Header({ theme, onToggleTheme, onExport, onImport }: Hea
           />
           {state.searchQuery && (
             <button className={styles.clearSearch} onClick={() => dispatch({ type: 'SET_SEARCH', payload: '' })}>
-              ×
+              <Icon name="x" size={12} />
             </button>
           )}
         </div>
@@ -96,7 +102,7 @@ export default function Header({ theme, onToggleTheme, onExport, onImport }: Hea
         >
           <option value="all">全部</option>
           {(Object.entries(TAG_CONFIG) as [TagColor, typeof TAG_CONFIG[TagColor]][]).map(([k, cfg]) => (
-            <option key={k} value={k}>{cfg.icon} {cfg.label}</option>
+            <option key={k} value={k}>{cfg.label}</option>
           ))}
         </select>
         <div className={styles.viewSwitcher}>

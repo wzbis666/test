@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useAppContext } from '../../context/AppContext';
 import { parseDate, formatDate, getMonthGrid, isToday, isSameDay } from '../../utils/date';
+import Icon from '../Icon';
 import styles from './MiniCalendar.module.css';
 
 export default function MiniCalendar() {
@@ -42,9 +43,9 @@ export default function MiniCalendar() {
   return (
     <aside className={styles.sidebar}>
       <div className={styles.monthHeader}>
-        <button className={styles.monthNav} onClick={goPrevMonth}>‹</button>
+        <button className={styles.monthNav} onClick={goPrevMonth}><Icon name="chevron-left" size={14} /></button>
         <span className={styles.monthLabel}>{currentDate.format('YYYY年M月')}</span>
-        <button className={styles.monthNav} onClick={goNextMonth}>›</button>
+        <button className={styles.monthNav} onClick={goNextMonth}><Icon name="chevron-right" size={14} /></button>
       </div>
       <div className={styles.weekRow}>
         {weekDays.map((d) => (

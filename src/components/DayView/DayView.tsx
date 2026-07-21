@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useAppContext } from '../../context/AppContext';
 import { useEvents } from '../../hooks/useEvents';
 import { parseQuickAdd } from '../../utils/parser';
@@ -6,6 +7,7 @@ import { parseDate, today } from '../../utils/date';
 import { getRecurringInstances, formatRecurrence } from '../../utils/recurrence';
 import { TAG_CONFIG } from '../../types';
 import type { Event } from '../../types';
+import Icon from '../Icon';
 import styles from './DayView.module.css';
 
 interface DayViewProps {
@@ -26,10 +28,8 @@ export default function DayView({ onEditEvent, onCreateEvent }: DayViewProps) {
   const currentDayjs = parseDate(state.currentDate);
   const isToday = state.currentDate === today();
   const dateLabel = isToday ? '今天' : currentDayjs.format('M月D日 ddd');
-  // Breadcrumb: "2026年7月 · 第30周"
   const breadcrumb = `${currentDayjs.format('YYYY年M月')} · 第${currentDayjs.isoWeek()}周`;
 
-  // Live preview of quick-add
   const quickPreview = useMemo(() => {
     if (!quickText.trim()) return null;
     const parsed = parseQuickAdd(quickText.trim());
@@ -79,16 +79,13 @@ export default function DayView({ onEditEvent, onCreateEvent }: DayViewProps) {
   const filteredTimed = filterEvents(timedEvents);
   const totalCount = filteredAllDay.length + filteredTimed.length;
 
-  // Conflict detection
   const conflictIds = useMemo(() => {
     const ids = new Set<string>();
     const timed = filteredTimed.filter(e => !e.isAllDay);
     for (let i = 0; i < timed.length; i++) {
       for (let j = i + 1; j < timed.length; j++) {
         const a = timed[i]!, b = timed[j]!;
-        if (a.startTime < b.endTime && b.startTime < a.endTime) {
-          ids.add(a.id); ids.add(b.id);
-        }
+        if (a.startTime < b.endTime && b.startTime < a.endTime) { ids.add(a.id); ids.add(b.id); }
       }
     }
     return ids;
@@ -139,98 +136,121 @@ export default function DayView({ onEditEvent, onCreateEvent }: DayViewProps) {
   const evening = filteredTimed.filter(e => e.startTime >= '18:00');
 
   const sections = [
-    ...(filteredAllDay.length > 0 ? [{ label: '全天', icon: '📆', events: filteredAllDay }] : []),
-    { label: '上午', icon: '☀️', events: morning },
-    { label: '下午', icon: '🌤', events: afternoon },
-    { label: '晚上', icon: '🌙', events: evening },
+    ...(filteredAllDay.length > 0 ? [{ label: '全天', icon: 'calendar-days', events: filteredAllDay }] : []),
+    { label: '上午', icon: 'sun', events: morning },
+    { label: '下午', icon: 'cloud-sun', events: afternoon },
+    { label: '晚上', icon: 'moon', events: evening },
   ].filter(s => s.events.length > 0);
 
   return (
     <div className={styles.container} data-scroll>
       <div className={styles.quickAdd}>
-        <span className={styles.quickAddIcon}>+</span>
+        <Icon name="plus" size={18} className={styles.quickAddIcon} />
         <input ref={inputRef} className={styles.quickAddInput} type="text"
           placeholder="添加日程，如「明天下午3点产品评审」"
           value={quickText} onChange={(e) => setQuickText(e.target.value)} onKeyDown={handleQuickKey} />
-        {quickText && (
-          <button className={styles.quickAddBtn} onClick={handleQuickAdd}>{parsing ? '...' : '添加'}</button>
-        )}
+        <AnimatePresence>
+          {quickText && (
+            <motion.button
+              initial={{ opacity: 0, scale: .9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: .9 }}
+              className={styles.quickAddBtn} onClick={handleQuickAdd}>{parsing ? '...' : '添加'}
+            </motion.button>
+          )}
+        </AnimatePresence>
       </div>
-      {/* Live preview */}
-      {quickPreview && (
-        <div className={styles.preview}>{quickPreview}</div>
-      )}
+      <AnimatePresence>
+        {quickPreview && (
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+            className={styles.preview}>{quickPreview}</motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Breadcrumb */}
-      <div className={styles.breadcrumb}>{breadcrumb}</div>
+      <div className={styles.breadcrumb}>
+        <Icon name="calendar-days" size={12} style={{ display: 'inline', marginRight: 4, opacity: .5 }} />
+        {breadcrumb}
+      </div>
       <div className={styles.dateHeader}>
-        <span className={styles.dateEmoji}>📅</span>
         <span className={styles.dateLabel}>{dateLabel}</span>
         <span className={styles.eventCount}>{totalCount === 0 ? '暂无日程' : `${totalCount} 项日程`}</span>
       </div>
 
       <div className={styles.list}>
         {totalCount === 0 ? (
-          <div className={styles.empty}>
-            <div className={styles.emptyIcon}>✨</div>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={styles.empty}>
+            <Icon name="sparkles" size={44} className={styles.emptyIcon} />
             <p className={styles.emptyTitle}>今天还没有日程</p>
             <p className={styles.emptyHint}>在上方输入框快速创建，或点击右下角 + 添加</p>
-          </div>
+          </motion.div>
         ) : (
-          sections.map(section => (
-            <div key={section.label} className={styles.section}>
-              <div className={styles.sectionHeader}><span>{section.icon}</span><span>{section.label}</span></div>
-              {section.events.map((event, i) => {
-                const isVirtual = '_isVirtual' in event && (event as any)._isVirtual;
-                const isNew = parsing && event.id === state.events[state.events.length - 1]?.id;
-                const isDeleting = deletingId === event.id;
-                const hasConflict = conflictIds.has(event.id);
-                const recurLabel = formatRecurrence(event);
-                return (
-                  <div
-                    key={event.id + (isVirtual ? (event as any)._instanceDate : '')}
-                    className={`${styles.eventItem} ${isNew ? styles.flyIn : ''} ${isDeleting ? styles.slideOut : ''} ${event.completed ? styles.completed : ''} ${hasConflict ? styles.conflict : ''}`}
-                    style={{ animationDelay: isNew ? '0s' : `${i * 0.03}s` }}
-                    onClick={() => onEditEvent(event)}
-                  >
-                    {/* Drag handle */}
-                    <span className={styles.dragHandle} title="拖拽排序">⋮⋮</span>
-                    {/* Complete checkbox */}
-                    <button className={styles.checkbox} onClick={(e) => handleToggleComplete(e, event)}>
-                      {event.completed ? '✅' : '○'}
-                    </button>
-                    <div className={styles.eventTime}>
-                      {event.isAllDay ? <span className={styles.timeStart}>全天</span> : (
-                        <>
-                          <span className={styles.timeStart}>{event.startTime}</span>
-                          <span className={styles.timeEnd}>{event.endTime}</span>
-                        </>
-                      )}
-                    </div>
-                    {isHappeningNow(event) && <span className={styles.nowIndicator} />}
-                    <span className={styles.tagIcon}>{TAG_CONFIG[event.tag].icon}</span>
-                    <div className={styles.eventBody}>
-                      <span className={styles.eventTitle}>{event.title}</span>
-                      <div className={styles.eventMeta}>
-                        {event.note && <span className={styles.eventNote}>{event.note}</span>}
-                        {recurLabel && <span className={styles.recurLabel}>🔄 {recurLabel}</span>}
-                        {hasConflict && <span className={styles.conflictBadge}>⚠ 冲突</span>}
+          <AnimatePresence>
+            {sections.map(section => (
+              <div key={section.label} className={styles.section}>
+                <div className={styles.sectionHeader}>
+                  <Icon name={section.icon} size={14} />
+                  <span>{section.label}</span>
+                </div>
+                {section.events.map((event, i) => {
+                  const isVirtual = '_isVirtual' in event && (event as any)._isVirtual;
+                  const isDeleting = deletingId === event.id;
+                  const hasConflict = conflictIds.has(event.id);
+                  const recurLabel = formatRecurrence(event);
+                  return (
+                    <motion.div
+                      key={event.id + (isVirtual ? (event as any)._instanceDate : '')}
+                      layout
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, x: 40, height: 0, marginBottom: 0, paddingTop: 0, paddingBottom: 0, overflow: 'hidden' }}
+                      transition={{ type: 'spring', stiffness: 500, damping: 45, mass: 1, delay: i * 0.02 }}
+                      className={`${styles.eventItem} ${event.completed ? styles.completed : ''} ${hasConflict ? styles.conflict : ''} ${isDeleting ? styles.slideOut : ''}`}
+                      onClick={() => onEditEvent(event)}
+                    >
+                      <span className={styles.dragHandle}><Icon name="grip-vertical" size={12} /></span>
+                      <button className={styles.checkbox} onClick={(e) => handleToggleComplete(e, event)}>
+                        <Icon name={event.completed ? 'circle-check' : 'circle'} size={18} />
+                      </button>
+                      <div className={styles.eventTime}>
+                        {event.isAllDay ? <span className={styles.timeStart}>全天</span> : (
+                          <>
+                            <span className={styles.timeStart}>{event.startTime}</span>
+                            <span className={styles.timeEnd}>{event.endTime}</span>
+                          </>
+                        )}
                       </div>
-                    </div>
-                    <button className={styles.deleteBtn}
-                      onClick={(e) => { e.stopPropagation(); handleDelete(event.id); }} title="删除">×</button>
-                  </div>
-                );
-              })}
-            </div>
-          ))
+                      {isHappeningNow(event) && <span className={styles.nowIndicator} />}
+                      <span className={styles.tagIcon}>
+                        <Icon name={TAG_CONFIG[event.tag].icon} size={14} />
+                      </span>
+                      <div className={styles.eventBody}>
+                        <span className={styles.eventTitle}>{event.title}</span>
+                        <div className={styles.eventMeta}>
+                          {event.note && <span className={styles.eventNote}>{event.note}</span>}
+                          {recurLabel && <span className={styles.recurLabel}>🔄 {recurLabel}</span>}
+                          {hasConflict && <span className={styles.conflictBadge}>⚠ 冲突</span>}
+                        </div>
+                      </div>
+                      <button className={styles.deleteBtn}
+                        onClick={(e) => { e.stopPropagation(); handleDelete(event.id); }} title="删除">
+                        <Icon name="x" size={14} />
+                      </button>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            ))}
+          </AnimatePresence>
         )}
       </div>
 
-      <button className={`${styles.fab} ${fabVisible ? '' : styles.fabHidden}`} onClick={handleDetailAdd} title="详细添加">
-        <span className={styles.fabIcon}>+</span>
+      <motion.button
+        className={styles.fab}
+        animate={{ scale: fabVisible ? 1 : 0.5, opacity: fabVisible ? 1 : 0 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+        onClick={handleDetailAdd} title="详细添加"
+      >
+        <Icon name="plus" size={24} className={styles.fabIcon} />
         <span className={styles.ripple} />
-      </button>
+      </motion.button>
     </div>
   );
 }
