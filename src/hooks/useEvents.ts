@@ -15,6 +15,7 @@ interface CreateEventInput {
   endDate?: string;
   recurrence?: Recurrence;
   reminderMinutes?: number;
+  completed?: boolean;
 }
 
 export function useEvents() {
@@ -37,6 +38,7 @@ export function useEvents() {
         endDate: input.endDate ?? input.date,
         recurrence: input.recurrence ?? { type: 'none', interval: 1 },
         reminderMinutes: input.reminderMinutes ?? 0,
+        completed: input.completed ?? false,
         createdAt: now,
         updatedAt: now,
       };
@@ -61,6 +63,7 @@ export function useEvents() {
         endDate: input.endDate ?? input.date,
         recurrence: input.recurrence ?? { type: 'none', interval: 1 },
         reminderMinutes: input.reminderMinutes ?? 0,
+        completed: input.completed ?? existing?.completed ?? false,
         createdAt: existing?.createdAt ?? Date.now(),
         updatedAt: Date.now(),
       };

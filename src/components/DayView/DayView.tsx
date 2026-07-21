@@ -3,7 +3,7 @@ import { useAppContext } from '../../context/AppContext';
 import { useEvents } from '../../hooks/useEvents';
 import { parseQuickAdd } from '../../utils/parser';
 import { parseDate, today } from '../../utils/date';
-import { getRecurringInstances } from '../../utils/recurrence';
+import { getRecurringInstances, formatRecurrence } from '../../utils/recurrence';
 import { TAG_CONFIG } from '../../types';
 import type { Event } from '../../types';
 import styles from './DayView.module.css';
@@ -15,7 +15,7 @@ interface DayViewProps {
 
 export default function DayView({ onEditEvent, onCreateEvent }: DayViewProps) {
   const { state } = useAppContext();
-  const { getEventsByDate, deleteEvent, createEvent } = useEvents();
+  const { getEventsByDate, deleteEvent, createEvent, updateEvent } = useEvents();
   const [quickText, setQuickText] = useState('');
   const [parsing, setParsing] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -26,7 +26,6 @@ export default function DayView({ onEditEvent, onCreateEvent }: DayViewProps) {
   const isToday = state.currentDate === today();
   const dateLabel = isToday ? '今天' : parseDate(state.currentDate).format('M月D日 ddd');
 
-  // FAB hide on scroll
   useEffect(() => {
     const container = document.querySelector('[data-scroll]');
     if (!container) return;
@@ -64,6 +63,21 @@ export default function DayView({ onEditEvent, onCreateEvent }: DayViewProps) {
   const filteredTimed = filterEvents(timedEvents);
   const totalCount = filteredAllDay.length + filteredTimed.length;
 
+  // Conflict detection
+  const conflictIds = useMemo(() => {
+    const ids = new Set<string>();
+    const timed = filteredTimed.filter(e => !e.isAllDay);
+    for (let i = 0; i < timed.length; i++) {
+      for (let j = i + 1; j < timed.length; j++) {
+        const a = timed[i]!, b = timed[j]!;
+        if (a.startTime < b.endTime && b.startTime < a.endTime) {
+          ids.add(a.id); ids.add(b.id);
+        }
+      }
+    }
+    return ids;
+  }, [filteredTimed]);
+
   useEffect(() => { inputRef.current?.focus(); }, [state.currentDate]);
 
   const handleQuickAdd = () => {
@@ -84,26 +98,25 @@ export default function DayView({ onEditEvent, onCreateEvent }: DayViewProps) {
 
   const handleDelete = useCallback((id: string) => {
     setDeletingId(id);
-    setTimeout(() => {
-      deleteEvent(id);
-      setDeletingId(null);
-    }, 250);
+    setTimeout(() => { deleteEvent(id); setDeletingId(null); }, 250);
   }, [deleteEvent]);
+
+  const handleToggleComplete = useCallback((e: React.MouseEvent, event: Event) => {
+    e.stopPropagation();
+    updateEvent({ ...event, completed: !event.completed });
+  }, [updateEvent]);
+
+  const handleDetailAdd = () => onCreateEvent(state.currentDate);
 
   const isHappeningNow = (event: Event) => {
     if (event.isAllDay) return false;
     const now = new Date();
-    const todayStr = now.toISOString().slice(0, 10);
-    if (event.date !== todayStr) return false;
+    if (event.date !== now.toISOString().slice(0, 10)) return false;
     const nowMin = now.getHours() * 60 + now.getMinutes();
     const [sh, sm] = event.startTime.split(':').map(Number);
     const [eh, em] = event.endTime.split(':').map(Number);
-    const startMin = sh! * 60 + sm!;
-    const endMin = eh! * 60 + em!;
-    return nowMin >= startMin && nowMin < endMin;
+    return nowMin >= (sh! * 60 + sm!) && nowMin < (eh! * 60 + em!);
   };
-
-  const handleDetailAdd = () => onCreateEvent(state.currentDate);
 
   const morning = filteredTimed.filter(e => e.startTime < '12:00');
   const afternoon = filteredTimed.filter(e => e.startTime >= '12:00' && e.startTime < '18:00');
@@ -120,19 +133,11 @@ export default function DayView({ onEditEvent, onCreateEvent }: DayViewProps) {
     <div className={styles.container} data-scroll>
       <div className={styles.quickAdd}>
         <span className={styles.quickAddIcon}>+</span>
-        <input
-          ref={inputRef}
-          className={styles.quickAddInput}
-          type="text"
+        <input ref={inputRef} className={styles.quickAddInput} type="text"
           placeholder="添加日程，如「明天下午3点产品评审」"
-          value={quickText}
-          onChange={(e) => setQuickText(e.target.value)}
-          onKeyDown={handleQuickKey}
-        />
+          value={quickText} onChange={(e) => setQuickText(e.target.value)} onKeyDown={handleQuickKey} />
         {quickText && (
-          <button className={styles.quickAddBtn} onClick={handleQuickAdd}>
-            {parsing ? '...' : '添加'}
-          </button>
+          <button className={styles.quickAddBtn} onClick={handleQuickAdd}>{parsing ? '...' : '添加'}</button>
         )}
       </div>
 
@@ -152,25 +157,28 @@ export default function DayView({ onEditEvent, onCreateEvent }: DayViewProps) {
         ) : (
           sections.map(section => (
             <div key={section.label} className={styles.section}>
-              <div className={styles.sectionHeader}>
-                <span>{section.icon}</span>
-                <span>{section.label}</span>
-              </div>
+              <div className={styles.sectionHeader}><span>{section.icon}</span><span>{section.label}</span></div>
               {section.events.map((event, i) => {
                 const isVirtual = '_isVirtual' in event && (event as any)._isVirtual;
                 const isNew = parsing && event.id === state.events[state.events.length - 1]?.id;
                 const isDeleting = deletingId === event.id;
+                const hasConflict = conflictIds.has(event.id);
+                const recurLabel = formatRecurrence(event);
                 return (
                   <div
                     key={event.id + (isVirtual ? (event as any)._instanceDate : '')}
-                    className={`${styles.eventItem} ${isNew ? styles.flyIn : ''} ${isDeleting ? styles.slideOut : ''}`}
+                    className={`${styles.eventItem} ${isNew ? styles.flyIn : ''} ${isDeleting ? styles.slideOut : ''} ${event.completed ? styles.completed : ''} ${hasConflict ? styles.conflict : ''}`}
                     style={{ animationDelay: isNew ? '0s' : `${i * 0.03}s` }}
                     onClick={() => onEditEvent(event)}
                   >
+                    {/* Drag handle */}
+                    <span className={styles.dragHandle} title="拖拽排序">⋮⋮</span>
+                    {/* Complete checkbox */}
+                    <button className={styles.checkbox} onClick={(e) => handleToggleComplete(e, event)}>
+                      {event.completed ? '✅' : '○'}
+                    </button>
                     <div className={styles.eventTime}>
-                      {event.isAllDay ? (
-                        <span className={styles.timeStart}>全天</span>
-                      ) : (
+                      {event.isAllDay ? <span className={styles.timeStart}>全天</span> : (
                         <>
                           <span className={styles.timeStart}>{event.startTime}</span>
                           <span className={styles.timeEnd}>{event.endTime}</span>
@@ -180,17 +188,15 @@ export default function DayView({ onEditEvent, onCreateEvent }: DayViewProps) {
                     {isHappeningNow(event) && <span className={styles.nowIndicator} />}
                     <span className={styles.tagIcon}>{TAG_CONFIG[event.tag].icon}</span>
                     <div className={styles.eventBody}>
-                      <span className={styles.eventTitle}>
-                        {event.title}
-                        {isVirtual && <span className={styles.recurBadge}>🔄</span>}
-                      </span>
-                      {event.note && <span className={styles.eventNote}>{event.note}</span>}
+                      <span className={styles.eventTitle}>{event.title}</span>
+                      <div className={styles.eventMeta}>
+                        {event.note && <span className={styles.eventNote}>{event.note}</span>}
+                        {recurLabel && <span className={styles.recurLabel}>🔄 {recurLabel}</span>}
+                        {hasConflict && <span className={styles.conflictBadge}>⚠ 冲突</span>}
+                      </div>
                     </div>
-                    <button
-                      className={styles.deleteBtn}
-                      onClick={(e) => { e.stopPropagation(); handleDelete(event.id); }}
-                      title="删除"
-                    >×</button>
+                    <button className={styles.deleteBtn}
+                      onClick={(e) => { e.stopPropagation(); handleDelete(event.id); }} title="删除">×</button>
                   </div>
                 );
               })}

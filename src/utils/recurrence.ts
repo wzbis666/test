@@ -64,3 +64,26 @@ export function getRecurringInstances(
       _isVirtual: e.date !== targetDate,
     }));
 }
+
+/** 将重复规则转为可读文本，如"每天"、"每周三"、"每月15日" */
+export function formatRecurrence(event: Event): string {
+  const { recurrence, date } = event;
+  if (recurrence.type === 'none') return '';
+  const prefix = recurrence.interval > 1 ? `每${recurrence.interval}` : '每';
+  switch (recurrence.type) {
+    case 'daily':
+      return recurrence.interval === 1 ? '每天' : `${prefix}天`;
+    case 'weekly': {
+      const weekNames = ['日', '一', '二', '三', '四', '五', '六'];
+      const dow = new Date(date).getDay();
+      const dayName = weekNames[dow]!;
+      return recurrence.interval === 1 ? `每周${dayName}` : `${prefix}周${dayName}`;
+    }
+    case 'monthly': {
+      const dom = new Date(date).getDate();
+      return recurrence.interval === 1 ? `每月${dom}日` : `${prefix}个月${dom}日`;
+    }
+    default:
+      return '';
+  }
+}

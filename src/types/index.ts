@@ -21,6 +21,7 @@ export interface Event {
   endDate: string;        // YYYY-MM-DD — 多日事件结束日期，单日事件与 date 相同
   recurrence: Recurrence; // 重复规则
   reminderMinutes: number; // 提前多少分钟提醒，0 = 不提醒
+  completed: boolean;      // 是否已完成
   createdAt: number;
   updatedAt: number;
 }
@@ -83,6 +84,7 @@ export function createDefaultEvent(date: string, startTime?: string): Event {
     endDate: date,
     recurrence: { type: 'none', interval: 1 },
     reminderMinutes: 0,
+    completed: false,
     createdAt: now,
     updatedAt: now,
   };
