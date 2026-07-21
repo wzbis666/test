@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { AppProvider, useAppContext } from './context/AppContext';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useEvents } from './hooks/useEvents';
+import { useTheme } from './hooks/useTheme';
 import { today as todayStr } from './utils/date';
 import { scheduleNotification, cancelNotification, requestNotificationPermission } from './utils/notifications';
 import Header from './components/Header/Header';
@@ -9,6 +10,7 @@ import DayView from './components/DayView/DayView';
 import WeekView from './components/WeekView/WeekView';
 import MonthView from './components/MonthView/MonthView';
 import EventModal from './components/EventModal/EventModal';
+import MiniCalendar from './components/MiniCalendar/MiniCalendar';
 import ToastContainer, { showToast } from './components/Toast/Toast';
 import type { Event, TagColor, ViewType, RecurrenceType } from './types';
 
@@ -21,7 +23,8 @@ interface ModalState {
 
 function AppInner() {
   const { state, dispatch } = useAppContext();
-  const { createEvent, updateEvent, deleteEvent } = useEvents();
+  const { createEvent, updateEvent, deleteEvent, events } = useEvents();
+  const { theme, toggle: toggleTheme } = useTheme();
   const [modal, setModal] = useState<ModalState>({
     open: false,
     date: todayStr(),
@@ -30,32 +33,64 @@ function AppInner() {
   });
   const notificationTimers = useRef<Map<string, number>>(new Map());
 
-  // Request notification permission on first load
   useEffect(() => {
     requestNotificationPermission();
   }, []);
 
-  // Schedule notifications for all events with reminders
   useEffect(() => {
-    // Clear old timers
     notificationTimers.current.forEach((id) => cancelNotification(id));
     notificationTimers.current.clear();
-
-    state.events.forEach((event) => {
+    events.forEach((event) => {
       if (event.reminderMinutes > 0) {
         const timerId = scheduleNotification(event);
-        if (timerId !== null) {
-          notificationTimers.current.set(event.id, timerId);
-        }
+        if (timerId !== null) notificationTimers.current.set(event.id, timerId);
       }
     });
-
     return () => {
       notificationTimers.current.forEach((id) => cancelNotification(id));
     };
-  }, [state.events]);
+  }, [events]);
 
-  // --- modal handlers ---
+  // --- Export ---
+  const handleExport = useCallback(() => {
+    const data = JSON.stringify(events, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `dayplan-export-${todayStr()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [events]);
+
+  // --- Import ---
+  const handleImport = useCallback((file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const imported = JSON.parse(e.target?.result as string);
+        if (!Array.isArray(imported)) throw new Error('格式错误');
+        // Merge: add imported events with new IDs to avoid conflicts
+        const merged = imported.map((ev: any) => ({
+          ...ev,
+          id: ev.id || crypto.randomUUID(),
+          createdAt: ev.createdAt || Date.now(),
+          updatedAt: Date.now(),
+          isAllDay: ev.isAllDay ?? false,
+          endDate: ev.endDate || ev.date,
+          recurrence: ev.recurrence || { type: 'none', interval: 1 },
+          reminderMinutes: ev.reminderMinutes ?? 0,
+        }));
+        merged.forEach((ev: Event) => dispatch({ type: 'ADD_EVENT', payload: ev }));
+        showToast(`已导入 ${merged.length} 条日程`);
+      } catch {
+        showToast('导入失败：文件格式不正确');
+      }
+    };
+    reader.readAsText(file);
+  }, [dispatch]);
+
+  // --- modal ---
   const openCreate = useCallback((date: string, startTime?: string) => {
     setModal({ open: true, date, startTime, event: null });
   }, []);
@@ -69,19 +104,9 @@ function AppInner() {
   }, []);
 
   const handleSave = useCallback(
-    (data: {
-      id?: string;
-      title: string;
-      date: string;
-      startTime: string;
-      endTime: string;
-      tag: TagColor;
-      note: string;
-      isAllDay: boolean;
-      endDate: string;
-      recurrence: { type: RecurrenceType; interval: number };
-      reminderMinutes: number;
-    }) => {
+    (data: { id?: string; title: string; date: string; startTime: string; endTime: string;
+      tag: TagColor; note: string; isAllDay: boolean; endDate: string;
+      recurrence: { type: RecurrenceType; interval: number }; reminderMinutes: number }) => {
       if (data.id) {
         updateEvent(data as Parameters<typeof updateEvent>[0]);
       } else {
@@ -94,7 +119,7 @@ function AppInner() {
 
   const handleDelete = useCallback(
     (id: string) => {
-      const deletedEvent = state.events.find((e) => e.id === id);
+      const deletedEvent = events.find((e) => e.id === id);
       deleteEvent(id);
       closeModal();
       if (deletedEvent) {
@@ -117,10 +142,10 @@ function AppInner() {
         });
       }
     },
-    [deleteEvent, closeModal, state.events, createEvent]
+    [deleteEvent, closeModal, events, createEvent]
   );
 
-  // --- keyboard shortcuts ---
+  // --- keyboard ---
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (modal.open) return;
@@ -128,47 +153,35 @@ function AppInner() {
       if ((el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') &&
           !el.closest('[class*="quickAdd"]') && !el.hasAttribute('data-search')) return;
 
-      if (e.key === 'n' || e.key === 'N') {
-        e.preventDefault();
-        openCreate(state.currentDate);
-      }
-      if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        dispatch({ type: 'SET_DATE', payload: getPrevDate(state.currentDate, state.currentView) });
-      }
-      if (e.key === 'ArrowRight') {
-        e.preventDefault();
-        dispatch({ type: 'SET_DATE', payload: getNextDate(state.currentDate, state.currentView) });
-      }
+      if (e.key === 'n' || e.key === 'N') { e.preventDefault(); openCreate(state.currentDate); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); dispatch({ type: 'SET_DATE', payload: getPrevDate(state.currentDate, state.currentView) }); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); dispatch({ type: 'SET_DATE', payload: getNextDate(state.currentDate, state.currentView) }); }
       if ((e.key === 'f' || e.key === 'F') && (e.ctrlKey || e.metaKey)) {
         e.preventDefault();
-        // Focus search input
-        const searchInput = document.querySelector<HTMLInputElement>('[data-search]');
-        searchInput?.focus();
+        document.querySelector<HTMLInputElement>('[data-search]')?.focus();
       }
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
   }, [modal.open, state.currentDate, state.currentView, openCreate, dispatch]);
 
-  // --- render ---
   const renderView = () => {
     switch (state.currentView) {
-      case 'day':
-        return <DayView onEditEvent={openEdit} onCreateEvent={openCreate} />;
-      case 'week':
-        return <WeekView onEditEvent={openEdit} onCreateEvent={openCreate} />;
-      case 'month':
-        return <MonthView />;
+      case 'day': return <DayView onEditEvent={openEdit} onCreateEvent={openCreate} />;
+      case 'week': return <WeekView onEditEvent={openEdit} onCreateEvent={openCreate} />;
+      case 'month': return <MonthView />;
     }
   };
 
   return (
     <div className="app-shell">
-      <Header />
-      <main className="view-container">
-        {renderView()}
-      </main>
+      <Header theme={theme} onToggleTheme={toggleTheme} onExport={handleExport} onImport={handleImport} />
+      <div className="main-layout">
+        <MiniCalendar />
+        <main className="view-container">
+          {renderView()}
+        </main>
+      </div>
       {modal.open && (
         <EventModal
           date={modal.date}
@@ -184,30 +197,20 @@ function AppInner() {
   );
 }
 
-// --- date nav helpers ---
 function getPrevDate(current: string, view: ViewType): string {
   const d = new Date(current);
-  switch (view) {
-    case 'day': d.setDate(d.getDate() - 1); break;
-    case 'week': d.setDate(d.getDate() - 7); break;
-    case 'month': d.setMonth(d.getMonth() - 1); break;
-  }
+  switch (view) { case 'day': d.setDate(d.getDate() - 1); break; case 'week': d.setDate(d.getDate() - 7); break; case 'month': d.setMonth(d.getMonth() - 1); break; }
   return d.toISOString().slice(0, 10);
 }
 
 function getNextDate(current: string, view: ViewType): string {
   const d = new Date(current);
-  switch (view) {
-    case 'day': d.setDate(d.getDate() + 1); break;
-    case 'week': d.setDate(d.getDate() + 7); break;
-    case 'month': d.setMonth(d.getMonth() + 1); break;
-  }
+  switch (view) { case 'day': d.setDate(d.getDate() + 1); break; case 'week': d.setDate(d.getDate() + 7); break; case 'month': d.setMonth(d.getMonth() + 1); break; }
   return d.toISOString().slice(0, 10);
 }
 
 export default function App() {
   const [events] = useLocalStorage<Event[]>('dayplan-events', []);
-
   return (
     <AppProvider initialEvents={events}>
       <SyncEvents />
@@ -219,10 +222,6 @@ export default function App() {
 function SyncEvents() {
   const { state } = useAppContext();
   const [, setEvents] = useLocalStorage<Event[]>('dayplan-events', []);
-
-  useEffect(() => {
-    setEvents(state.events);
-  }, [state.events, setEvents]);
-
+  useEffect(() => { setEvents(state.events); }, [state.events, setEvents]);
   return null;
 }

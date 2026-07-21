@@ -130,6 +130,12 @@ input, textarea, select {
   flex-direction: column;
 }
 
+.main-layout {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+}
+
 .view-container {
   flex: 1;
   overflow: hidden;
@@ -141,6 +147,51 @@ input, textarea, select {
 ::selection {
   background: rgba(61, 57, 41, 0.12);
   color: var(--color-text);
+}
+
+/* — dark theme — */
+[data-theme="dark"] {
+  --color-bg: #1C1B18;
+  --color-surface: #282724;
+  --color-surface-hover: #33312D;
+  --color-border: #3D3A35;
+  --color-border-light: #33312D;
+  --color-text: #E8E4DD;
+  --color-text-secondary: #A09B93;
+  --color-text-muted: #6E6A64;
+  --color-today: #2A2824;
+  --color-today-accent: #E8E4DD;
+  --color-primary: #D5CBB5;
+  --color-primary-hover: #EBE4D4;
+  --color-primary-light: rgba(213, 203, 181, 0.1);
+
+  /* tag bg dimmed */
+  --color-red-bg: rgba(229, 72, 77, .12);
+  --color-red-border: rgba(229, 72, 77, .25);
+  --color-orange-bg: rgba(237, 122, 38, .12);
+  --color-orange-border: rgba(237, 122, 38, .25);
+  --color-blue-bg: rgba(59, 130, 246, .12);
+  --color-blue-border: rgba(59, 130, 246, .25);
+  --color-green-bg: rgba(48, 164, 108, .12);
+  --color-green-border: rgba(48, 164, 108, .25);
+  --color-purple-bg: rgba(139, 92, 246, .12);
+  --color-purple-border: rgba(139, 92, 246, .25);
+  --color-gray-bg: rgba(120, 116, 109, .12);
+  --color-gray-border: rgba(120, 116, 109, .25);
+
+  --shadow-xs: 0 1px 2px rgba(0,0,0,.2);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,.3);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.4);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,.5);
+  --shadow-xl: 0 24px 64px rgba(0,0,0,.6);
+}
+
+[data-theme="dark"] body::before {
+  opacity: .04;
+}
+
+[data-theme="dark"] ::selection {
+  background: rgba(213, 203, 181, 0.2);
 }
 
 @media (max-width: 640px) {

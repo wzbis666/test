@@ -1,12 +1,21 @@
+import { useRef } from 'react';
 import { useAppContext } from '../../context/AppContext';
 import { formatDisplay, parseDate, today } from '../../utils/date';
 import { TAG_CONFIG } from '../../types';
 import type { ViewType, TagColor } from '../../types';
 import styles from './Header.module.css';
 
-export default function Header() {
+interface HeaderProps {
+  theme: 'light' | 'dark';
+  onToggleTheme: () => void;
+  onExport: () => void;
+  onImport: (file: File) => void;
+}
+
+export default function Header({ theme, onToggleTheme, onExport, onImport }: HeaderProps) {
   const { state, dispatch } = useAppContext();
   const currentDate = parseDate(state.currentDate);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const goToday = () => dispatch({ type: 'SET_DATE', payload: today() });
   const goPrev = () =>
@@ -18,13 +27,29 @@ export default function Header() {
 
   const views: ViewType[] = ['day', 'week', 'month'];
   const viewLabels: Record<ViewType, string> = { day: '日', week: '周', month: '月' };
-
   const hasFilter = state.searchQuery || state.filterTag !== 'all';
+
+  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) onImport(file);
+    e.target.value = '';
+  };
 
   return (
     <header className={styles.header}>
       <div className={styles.left}>
         <h1 className={styles.logo}>DayPlan</h1>
+        <div className={styles.actions}>
+          {/* Theme */}
+          <button className={styles.iconBtn} onClick={onToggleTheme} title={theme === 'light' ? '暗黑模式' : '浅色模式'}>
+            {theme === 'light' ? '🌙' : '☀️'}
+          </button>
+          {/* Export */}
+          <button className={styles.iconBtn} onClick={onExport} title="导出数据">📥</button>
+          {/* Import */}
+          <button className={styles.iconBtn} onClick={() => fileRef.current?.click()} title="导入数据">📤</button>
+          <input ref={fileRef} type="file" accept=".json" style={{ display: 'none' }} onChange={handleImport} />
+        </div>
       </div>
 
       <div className={styles.center}>
@@ -37,7 +62,6 @@ export default function Header() {
       </div>
 
       <div className={styles.right}>
-        {/* Search */}
         <div className={`${styles.searchWrap} ${hasFilter ? styles.searchActive : ''}`}>
           <span className={styles.searchIcon}>🔍</span>
           <input
@@ -49,16 +73,11 @@ export default function Header() {
             onChange={(e) => dispatch({ type: 'SET_SEARCH', payload: e.target.value })}
           />
           {state.searchQuery && (
-            <button
-              className={styles.clearSearch}
-              onClick={() => dispatch({ type: 'SET_SEARCH', payload: '' })}
-            >
+            <button className={styles.clearSearch} onClick={() => dispatch({ type: 'SET_SEARCH', payload: '' })}>
               ×
             </button>
           )}
         </div>
-
-        {/* Tag filter */}
         <select
           className={`${styles.filterSelect} ${state.filterTag !== 'all' ? styles.filterActive : ''}`}
           value={state.filterTag}
@@ -69,8 +88,6 @@ export default function Header() {
             <option key={k} value={k}>{cfg.icon} {cfg.label}</option>
           ))}
         </select>
-
-        {/* View switcher */}
         <div className={styles.viewSwitcher}>
           {views.map((v) => (
             <button
