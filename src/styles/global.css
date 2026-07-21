@@ -182,25 +182,32 @@ input, textarea, select {
   --dusk-start: transparent;
   --dusk-end: #1E1D2A;
 
-  /* tag bg dimmed */
-  --color-red-bg: rgba(229, 72, 77, .12);
-  --color-red-border: rgba(229, 72, 77, .25);
-  --color-orange-bg: rgba(237, 122, 38, .12);
-  --color-orange-border: rgba(237, 122, 38, .25);
-  --color-blue-bg: rgba(59, 130, 246, .12);
-  --color-blue-border: rgba(59, 130, 246, .25);
-  --color-green-bg: rgba(48, 164, 108, .12);
-  --color-green-border: rgba(48, 164, 108, .25);
-  --color-purple-bg: rgba(139, 92, 246, .12);
-  --color-purple-border: rgba(139, 92, 246, .25);
-  --color-gray-bg: rgba(120, 116, 109, .12);
-  --color-gray-border: rgba(120, 116, 109, .25);
+  /* — dark card surfaces — */
+  --card-bg: rgba(255,255,255,.04);
+  --card-bg-hover: rgba(255,255,255,.07);
+  --card-border: rgba(255,255,255,.06);
+  --input-shadow: inset 0 1px 3px rgba(0,0,0,.3);
 
-  --shadow-xs: 0 1px 2px rgba(0,0,0,.2);
-  --shadow-sm: 0 2px 8px rgba(0,0,0,.3);
-  --shadow-md: 0 4px 16px rgba(0,0,0,.4);
-  --shadow-lg: 0 12px 40px rgba(0,0,0,.5);
-  --shadow-xl: 0 24px 64px rgba(0,0,0,.6);
+  /* tag bg — slightly more saturated */
+  --color-red-bg: rgba(229, 72, 77, .18);
+  --color-red-border: rgba(229, 72, 77, .35);
+  --color-orange-bg: rgba(237, 122, 38, .18);
+  --color-orange-border: rgba(237, 122, 38, .35);
+  --color-blue-bg: rgba(59, 130, 246, .18);
+  --color-blue-border: rgba(59, 130, 246, .35);
+  --color-green-bg: rgba(48, 164, 108, .18);
+  --color-green-border: rgba(48, 164, 108, .35);
+  --color-purple-bg: rgba(139, 92, 246, .18);
+  --color-purple-border: rgba(139, 92, 246, .35);
+  --color-gray-bg: rgba(120, 116, 109, .18);
+  --color-gray-border: rgba(120, 116, 109, .35);
+
+  /* shadows → glow */
+  --shadow-xs: 0 0 0 1px rgba(255,255,255,.03);
+  --shadow-sm: 0 0 0 1px rgba(255,255,255,.05), 0 2px 8px rgba(0,0,0,.3);
+  --shadow-md: 0 0 0 1px rgba(255,255,255,.06), 0 4px 20px rgba(0,0,0,.5);
+  --shadow-lg: 0 0 0 1px rgba(255,255,255,.07), 0 8px 40px rgba(0,0,0,.6);
+  --shadow-xl: 0 0 0 1px rgba(255,255,255,.08), 0 16px 64px rgba(0,0,0,.7);
 }
 
 [data-theme="dark"] body::before {
@@ -209,6 +216,36 @@ input, textarea, select {
 
 [data-theme="dark"] ::selection {
   background: rgba(213, 203, 181, 0.2);
+}
+
+/* — dark mode cards & surfaces — */
+[data-theme="dark"] .quickAdd,
+[data-theme="dark"] .eventItem:hover,
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] input[type="date"],
+[data-theme="dark"] input[type="time"],
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  box-shadow: var(--input-shadow);
+}
+
+[data-theme="dark"] .eventItem:hover {
+  background: var(--card-bg-hover);
+  border-color: var(--card-border);
+}
+
+[data-theme="dark"] .quickAdd {
+  background: var(--card-bg);
+  border-color: var(--card-border);
+}
+
+[data-theme="dark"] .quickAdd:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+[data-theme="dark"] .modal {
+  background: var(--color-surface);
 }
 
 @media (max-width: 640px) {
