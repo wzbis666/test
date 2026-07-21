@@ -141,6 +141,12 @@ input, textarea, select {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  animation: viewIn .25s ease;
+}
+
+@keyframes viewIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* — selection — */

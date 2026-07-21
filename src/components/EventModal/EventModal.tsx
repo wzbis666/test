@@ -111,6 +111,7 @@ export default function EventModal({ date, startTime, event, onSave, onDelete, o
                 checked={isAllDay}
                 onChange={(e) => setIsAllDay(e.target.checked)}
               />
+              <span className={styles.toggle} />
               <span>全天事件</span>
             </label>
 

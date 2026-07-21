@@ -178,7 +178,7 @@ function AppInner() {
       <Header theme={theme} onToggleTheme={toggleTheme} onExport={handleExport} onImport={handleImport} />
       <div className="main-layout">
         <MiniCalendar />
-        <main className="view-container">
+        <main className="view-container" key={state.currentView}>
           {renderView()}
         </main>
       </div>
