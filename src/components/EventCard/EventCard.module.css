@@ -34,7 +34,6 @@
   color: var(--tag-color);
   margin-bottom: 2px;
   white-space: nowrap;
-  opacity: .75;
   font-variant-numeric: tabular-nums;
 }
 
@@ -42,7 +41,9 @@
   font-size: var(--font-size-sm);
   font-weight: 600;
   line-height: 1.35;
-  color: var(--color-text);
+  /* tag-bg 始终是浅色（不随主题翻转），因此标题文字必须固定为深色
+     以保证在浅色/深色主题下都满足 WCAG AA 4.5:1 对比度 */
+  color: #1F1B16;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -50,12 +51,11 @@
 
 .note {
   font-size: 11px;
-  color: var(--color-text-secondary);
+  color: #3A3530;
   margin-top: 2px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  opacity: .7;
 }
 
 /* Tag icon on the right edge */
@@ -87,7 +87,7 @@
 .compact .title {
   font-size: var(--font-size-xs);
   font-weight: 700;
-  color: var(--color-text);
+  color: #1F1B16;
 }
 .compact .tagIcon {
   font-size: 11px;
