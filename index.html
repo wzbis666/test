@@ -52,6 +52,14 @@
       <div class="splash-sub">轻日程 · 即开即用</div>
     </div>
     <div id="root"></div>
+    <script>
+      // Unregister old service worker that was causing white screen on revisit
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(regs) {
+          regs.forEach(function(r) { r.unregister(); });
+        });
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
