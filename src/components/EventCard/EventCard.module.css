@@ -1,0 +1,93 @@
+.card {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  background: var(--tag-bg);
+  border: 1px solid var(--tag-border);
+  border-radius: var(--radius-sm);
+  padding: 7px 10px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: box-shadow .18s ease, transform .18s ease, border-color .18s ease;
+  z-index: 1;
+  user-select: none;
+}
+.card:hover {
+  box-shadow: var(--shadow-md);
+  z-index: 3;
+  transform: translateY(-1px);
+  border-color: var(--tag-color);
+}
+.card.short {
+  padding: 4px 8px;
+}
+.card.short .time {
+  margin-bottom: 0;
+}
+.card.short .title {
+  font-size: var(--font-size-xs);
+}
+
+.time {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--tag-color);
+  margin-bottom: 2px;
+  white-space: nowrap;
+  opacity: .75;
+  font-variant-numeric: tabular-nums;
+}
+
+.title {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.note {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: .7;
+}
+
+/* Tag icon on the right edge */
+.tagIcon {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  opacity: .55;
+  line-height: 1;
+  pointer-events: none;
+}
+.card:hover .tagIcon {
+  opacity: .85;
+  transition: opacity .18s;
+}
+
+/* Compact mode (WeekView) */
+.compact {
+  position: relative;
+  left: 0;
+  right: 0;
+  margin-bottom: 2px;
+  padding: 5px 7px;
+  border-radius: 6px;
+  border-width: 1px;
+}
+.compact .title {
+  font-size: var(--font-size-xs);
+}
+.compact .tagIcon {
+  font-size: 11px;
+  right: 3px;
+}

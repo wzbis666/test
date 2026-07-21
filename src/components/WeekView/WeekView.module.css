@@ -1,0 +1,101 @@
+.container {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  overflow-y: auto;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-right: 1px solid var(--color-border-light);
+  padding: 4px 6px;
+}
+.column:last-child {
+  border-right: none;
+}
+.column.today {
+  background: var(--color-today);
+}
+
+.columnHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 4px 8px;
+  position: sticky;
+  top: 0;
+  background: inherit;
+  z-index: 2;
+}
+
+.dayName {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  letter-spacing: .03em;
+}
+
+.dayNum {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  margin-top: 4px;
+  color: var(--color-text);
+}
+.todayNum {
+  background: var(--color-primary);
+  color: #FBFAF7;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-base);
+}
+
+.columnBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.addBtn {
+  margin-top: 4px;
+  padding: 5px;
+  font-size: 11px;
+  color: var(--color-text-muted);
+  border-radius: 6px;
+  transition: all .15s ease;
+  font-weight: 500;
+}
+.addBtn:hover {
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+@media (max-width: 640px) {
+  .column {
+    padding: 2px 3px;
+  }
+  .columnHeader {
+    padding: 6px 2px 4px;
+  }
+  .dayNum {
+    font-size: var(--font-size-lg);
+  }
+  .todayNum {
+    width: 26px;
+    height: 26px;
+    font-size: var(--font-size-sm);
+  }
+}

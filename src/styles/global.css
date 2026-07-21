@@ -1,0 +1,151 @@
+:root {
+  /* — warm minimalist palette — */
+  --color-bg: #FBFAF7;
+  --color-surface: #F3F1EC;
+  --color-surface-hover: #EBE8E2;
+  --color-border: #E6E3DD;
+  --color-border-light: #EFECE7;
+  --color-text: #2D2A26;
+  --color-text-secondary: #78746D;
+  --color-text-muted: #AAA59D;
+
+  /* — tag colors — richer, warmer — */
+  --color-red: #E5484D;
+  --color-red-bg: #FEF0F0;
+  --color-red-border: #FDE0E0;
+  --color-orange: #ED7A26;
+  --color-orange-bg: #FEF6EE;
+  --color-orange-border: #FDE8D0;
+  --color-blue: #3B82F6;
+  --color-blue-bg: #EEF4FF;
+  --color-blue-border: #DCE8FD;
+  --color-green: #30A46C;
+  --color-green-bg: #EDF8F2;
+  --color-green-border: #D4EDDF;
+  --color-purple: #8B5CF6;
+  --color-purple-bg: #F5F0FE;
+  --color-purple-border: #EBE0FD;
+  --color-gray: #78746D;
+  --color-gray-bg: #F3F1EC;
+  --color-gray-border: #E6E3DD;
+
+  /* — today highlight — */
+  --color-today: #F0EDE6;
+  --color-today-accent: #2D2A26;
+
+  /* — accent — */
+  --color-primary: #3D3929;
+  --color-primary-hover: #1A1814;
+  --color-primary-light: rgba(61, 57, 41, 0.06);
+
+  /* — radius — */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  /* — shadows — layered, soft — */
+  --shadow-xs: 0 1px 2px rgba(0,0,0,.03);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,.05);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.07);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,.10);
+  --shadow-xl: 0 24px 64px rgba(0,0,0,.14);
+
+  /* — typography — */
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  --font-size-xs: 11px;
+  --font-size-sm: 12px;
+  --font-size-base: 14px;
+  --font-size-md: 15px;
+  --font-size-lg: 17px;
+  --font-size-xl: 22px;
+  --font-size-2xl: 28px;
+
+  --header-height: 52px;
+  --time-column-width: 56px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  background: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* subtle noise texture overlay on body */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: .025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-size: inherit;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* — scrollbar — refined thin — */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+.app-shell {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.view-container {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* — selection — */
+::selection {
+  background: rgba(61, 57, 41, 0.12);
+  color: var(--color-text);
+}
+
+@media (max-width: 640px) {
+  :root {
+    --time-column-width: 42px;
+    --header-height: 46px;
+  }
+}

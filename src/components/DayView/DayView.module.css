@@ -1,0 +1,295 @@
+.container {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  max-width: 640px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 16px 100px;
+}
+
+/* — quick-add bar — */
+.quickAdd {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  margin-top: 20px;
+  background: var(--color-bg);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+.quickAdd:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.quickAddIcon {
+  font-size: 22px;
+  font-weight: 300;
+  color: var(--color-primary);
+  opacity: .5;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.quickAddInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+}
+.quickAddInput::placeholder {
+  color: var(--color-text-muted);
+  opacity: .7;
+}
+
+.quickAddBtn {
+  padding: 5px 14px;
+  border-radius: 18px;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  background: var(--color-primary);
+  color: #FBFAF7;
+  flex-shrink: 0;
+  transition: all .15s ease;
+}
+.quickAddBtn:hover {
+  background: var(--color-primary-hover);
+}
+
+/* — date header — */
+.dateHeader {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 24px 4px 16px;
+}
+
+.dateEmoji {
+  font-size: 20px;
+}
+
+.dateLabel {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.eventCount {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-left: auto;
+}
+
+/* — event list — */
+.list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.section {
+  margin-bottom: 16px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 4px 8px;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  letter-spacing: .02em;
+}
+
+/* — event item — */
+.eventItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background .12s ease;
+  position: relative;
+  margin-bottom: 3px;
+}
+.eventItem:hover {
+  background: var(--color-surface);
+}
+.eventItem.fresh {
+  animation: freshIn .4s ease;
+}
+
+@keyframes freshIn {
+  from { background: var(--color-primary-light); }
+  to { background: transparent; }
+}
+
+.eventTime {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  min-width: 48px;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.timeStart {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.2;
+}
+
+.timeEnd {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  line-height: 1.2;
+}
+
+.tagIcon {
+  font-size: 16px;
+  flex-shrink: 0;
+  align-self: center;
+  line-height: 1;
+}
+
+.eventBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.eventTitle {
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.eventNote {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.deleteBtn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+  opacity: 0;
+  transition: all .15s ease;
+}
+.eventItem:hover .deleteBtn {
+  opacity: 1;
+}
+.deleteBtn:hover {
+  background: var(--color-red-bg);
+  color: var(--color-red);
+}
+
+/* — empty state — */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.emptyTitle {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 6px;
+}
+
+.emptyHint {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  max-width: 260px;
+}
+
+/* — FAB — */
+.fab {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #FBFAF7;
+  font-size: 28px;
+  font-weight: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-lg);
+  z-index: 50;
+  transition: transform .2s ease, box-shadow .2s ease;
+  line-height: 1;
+}
+.fab:hover {
+  transform: scale(1.06);
+  box-shadow: var(--shadow-xl);
+}
+.fab:active {
+  transform: scale(.96);
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 0 12px 90px;
+  }
+  .quickAdd {
+    margin-top: 12px;
+    padding: 10px 12px;
+    gap: 6px;
+  }
+  .quickAddInput {
+    font-size: var(--font-size-sm);
+  }
+  .dateHeader {
+    padding: 16px 4px 10px;
+  }
+  .dateLabel {
+    font-size: var(--font-size-lg);
+  }
+  .eventItem {
+    padding: 10px 10px;
+    gap: 8px;
+  }
+  .fab {
+    bottom: 20px;
+    right: 20px;
+    width: 46px;
+    height: 46px;
+    font-size: 24px;
+  }
+}
