@@ -1,8 +1,9 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { useAppContext } from '../../context/AppContext';
 import { useEvents } from '../../hooks/useEvents';
 import { parseQuickAdd } from '../../utils/parser';
 import { parseDate, today } from '../../utils/date';
+import { getRecurringInstances } from '../../utils/recurrence';
 import { TAG_CONFIG } from '../../types';
 import type { Event } from '../../types';
 import styles from './DayView.module.css';
@@ -15,7 +16,6 @@ interface DayViewProps {
 export default function DayView({ onEditEvent, onCreateEvent }: DayViewProps) {
   const { state } = useAppContext();
   const { getEventsByDate, deleteEvent, createEvent } = useEvents();
-  const dayEvents = getEventsByDate(state.currentDate);
   const [quickText, setQuickText] = useState('');
   const [parsing, setParsing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -25,7 +25,46 @@ export default function DayView({ onEditEvent, onCreateEvent }: DayViewProps) {
     ? '今天'
     : parseDate(state.currentDate).format('M月D日 ddd');
 
-  // Focus quick-add input on mount
+  // Get events for today: direct + recurring instances + multi-day
+  const allDayEvents = useMemo(() => {
+    const direct = getEventsByDate(state.currentDate).filter(e => e.isAllDay);
+    const recurring = getRecurringInstances(state.events, state.currentDate)
+      .filter(e => e.isAllDay);
+    // Multi-day events (non-all-day, spanning across days)
+    const multiDay = state.events.filter(e =>
+      !e.isAllDay && e.endDate !== e.date &&
+      state.currentDate >= e.date && state.currentDate <= e.endDate
+    );
+    return [...direct, ...recurring, ...multiDay].sort((a, b) => a.title.localeCompare(b.title));
+  }, [state.events, state.currentDate, getEventsByDate]);
+
+  const timedEvents = useMemo(() => {
+    const direct = getEventsByDate(state.currentDate).filter(e => !e.isAllDay && e.endDate === e.date);
+    const recurring = getRecurringInstances(state.events, state.currentDate)
+      .filter(e => !e.isAllDay);
+    const multiDay = state.events.filter(e =>
+      !e.isAllDay && e.endDate !== e.date &&
+      state.currentDate >= e.date && state.currentDate <= e.endDate
+    );
+    return [...direct, ...recurring, ...multiDay].sort((a, b) => a.startTime.localeCompare(b.startTime));
+  }, [state.events, state.currentDate, getEventsByDate]);
+
+  // Apply search/filter
+  const filterEvents = (events: Event[]) => {
+    return events.filter(e => {
+      const matchSearch = !state.searchQuery ||
+        e.title.includes(state.searchQuery) ||
+        e.note.includes(state.searchQuery);
+      const matchTag = state.filterTag === 'all' || e.tag === state.filterTag;
+      return matchSearch && matchTag;
+    });
+  };
+
+  const filteredAllDay = filterEvents(allDayEvents);
+  const filteredTimed = filterEvents(timedEvents);
+
+  const totalCount = filteredAllDay.length + filteredTimed.length;
+
   useEffect(() => {
     inputRef.current?.focus();
   }, [state.currentDate]);
@@ -33,7 +72,6 @@ export default function DayView({ onEditEvent, onCreateEvent }: DayViewProps) {
   const handleQuickAdd = () => {
     const text = quickText.trim();
     if (!text) return;
-
     const parsed = parseQuickAdd(text);
     if (parsed) {
       setParsing(true);
@@ -54,12 +92,13 @@ export default function DayView({ onEditEvent, onCreateEvent }: DayViewProps) {
     onCreateEvent(state.currentDate);
   };
 
-  // Group events: morning (before 12:00), afternoon (12:00-18:00), evening (18:00+)
-  const morning = dayEvents.filter(e => e.startTime < '12:00');
-  const afternoon = dayEvents.filter(e => e.startTime >= '12:00' && e.startTime < '18:00');
-  const evening = dayEvents.filter(e => e.startTime >= '18:00');
+  // Group timed events
+  const morning = filteredTimed.filter(e => e.startTime < '12:00');
+  const afternoon = filteredTimed.filter(e => e.startTime >= '12:00' && e.startTime < '18:00');
+  const evening = filteredTimed.filter(e => e.startTime >= '18:00');
 
   const sections = [
+    ...(filteredAllDay.length > 0 ? [{ label: '全天', icon: '📆', events: filteredAllDay }] : []),
     { label: '上午', icon: '☀️', events: morning },
     { label: '下午', icon: '🌤', events: afternoon },
     { label: '晚上', icon: '🌙', events: evening },
@@ -67,7 +106,7 @@ export default function DayView({ onEditEvent, onCreateEvent }: DayViewProps) {
 
   return (
     <div className={styles.container}>
-      {/* Quick-add bar — Todoist style */}
+      {/* Quick-add bar */}
       <div className={styles.quickAdd}>
         <span className={styles.quickAddIcon}>+</span>
         <input
@@ -91,41 +130,51 @@ export default function DayView({ onEditEvent, onCreateEvent }: DayViewProps) {
         <span className={styles.dateEmoji}>📅</span>
         <span className={styles.dateLabel}>{dateLabel}</span>
         <span className={styles.eventCount}>
-          {dayEvents.length === 0 ? '暂无日程' : `${dayEvents.length} 项日程`}
+          {totalCount === 0 ? '暂无日程' : `${totalCount} 项日程`}
         </span>
       </div>
 
       {/* Event list */}
       <div className={styles.list}>
-        {dayEvents.length === 0 ? (
+        {totalCount === 0 ? (
           <div className={styles.empty}>
             <div className={styles.emptyIcon}>✨</div>
             <p className={styles.emptyTitle}>今天还没有日程</p>
             <p className={styles.emptyHint}>在上方输入框快速创建，或点击右下角 + 添加</p>
           </div>
         ) : (
-          <>
-            {sections.map(section => (
-              <div key={section.label} className={styles.section}>
-                <div className={styles.sectionHeader}>
-                  <span>{section.icon}</span>
-                  <span>{section.label}</span>
-                </div>
-                {section.events.map(event => (
+          sections.map(section => (
+            <div key={section.label} className={styles.section}>
+              <div className={styles.sectionHeader}>
+                <span>{section.icon}</span>
+                <span>{section.label}</span>
+              </div>
+              {section.events.map(event => {
+                const isVirtual = '_isVirtual' in event && (event as any)._isVirtual;
+                return (
                   <div
-                    key={event.id}
+                    key={event.id + (isVirtual ? (event as any)._instanceDate : '')}
                     className={`${styles.eventItem} ${parsing ? styles.fresh : ''}`}
                     onClick={() => onEditEvent(event)}
                   >
                     <div className={styles.eventTime}>
-                      <span className={styles.timeStart}>{event.startTime}</span>
-                      <span className={styles.timeEnd}>{event.endTime}</span>
+                      {event.isAllDay ? (
+                        <span className={styles.timeStart}>全天</span>
+                      ) : (
+                        <>
+                          <span className={styles.timeStart}>{event.startTime}</span>
+                          <span className={styles.timeEnd}>{event.endTime}</span>
+                        </>
+                      )}
                     </div>
                     <span className={styles.tagIcon}>
                       {TAG_CONFIG[event.tag].icon}
                     </span>
                     <div className={styles.eventBody}>
-                      <span className={styles.eventTitle}>{event.title}</span>
+                      <span className={styles.eventTitle}>
+                        {event.title}
+                        {isVirtual && <span className={styles.recurBadge}>🔄</span>}
+                      </span>
                       {event.note && <span className={styles.eventNote}>{event.note}</span>}
                     </div>
                     <button
@@ -139,14 +188,14 @@ export default function DayView({ onEditEvent, onCreateEvent }: DayViewProps) {
                       ×
                     </button>
                   </div>
-                ))}
-              </div>
-            ))}
-          </>
+                );
+              })}
+            </div>
+          ))
         )}
       </div>
 
-      {/* FAB — detail add */}
+      {/* FAB */}
       <button className={styles.fab} onClick={handleDetailAdd} title="详细添加">
         +
       </button>

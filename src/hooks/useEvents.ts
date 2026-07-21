@@ -1,7 +1,8 @@
 import { useCallback } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { generateId } from '../utils/id';
-import type { Event, TagColor } from '../types';
+import { createDefaultEvent } from '../types';
+import type { Event, TagColor, Recurrence } from '../types';
 
 interface CreateEventInput {
   title: string;
@@ -10,6 +11,10 @@ interface CreateEventInput {
   endTime: string;
   tag: TagColor;
   note: string;
+  isAllDay?: boolean;
+  endDate?: string;
+  recurrence?: Recurrence;
+  reminderMinutes?: number;
 }
 
 export function useEvents() {
@@ -18,9 +23,20 @@ export function useEvents() {
   const createEvent = useCallback(
     (input: CreateEventInput) => {
       const now = Date.now();
+      const base = createDefaultEvent(input.date, input.startTime);
       const event: Event = {
+        ...base,
         id: generateId(),
-        ...input,
+        title: input.title,
+        date: input.date,
+        startTime: input.startTime,
+        endTime: input.endTime,
+        tag: input.tag,
+        note: input.note,
+        isAllDay: input.isAllDay ?? false,
+        endDate: input.endDate ?? input.date,
+        recurrence: input.recurrence ?? { type: 'none', interval: 1 },
+        reminderMinutes: input.reminderMinutes ?? 0,
         createdAt: now,
         updatedAt: now,
       };
@@ -41,6 +57,10 @@ export function useEvents() {
         endTime: input.endTime,
         tag: input.tag,
         note: input.note,
+        isAllDay: input.isAllDay ?? false,
+        endDate: input.endDate ?? input.date,
+        recurrence: input.recurrence ?? { type: 'none', interval: 1 },
+        reminderMinutes: input.reminderMinutes ?? 0,
         createdAt: existing?.createdAt ?? Date.now(),
         updatedAt: Date.now(),
       };

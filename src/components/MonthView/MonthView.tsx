@@ -1,11 +1,8 @@
+import { useMemo } from 'react';
 import { useEvents } from '../../hooks/useEvents';
 import { useAppContext } from '../../context/AppContext';
-import {
-  getMonthGrid,
-  parseDate,
-  isToday,
-  formatDate,
-} from '../../utils/date';
+import { getMonthGrid, parseDate, isToday, formatDate } from '../../utils/date';
+import { getRecurringInstances } from '../../utils/recurrence';
 import { TAG_CONFIG } from '../../types';
 import styles from './MonthView.module.css';
 
@@ -14,8 +11,26 @@ export default function MonthView() {
   const { getEventsByDate } = useEvents();
   const currentMonth = parseDate(state.currentDate);
   const grid = getMonthGrid(currentMonth);
-
   const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
+
+  const getDayEvents = useMemo(() => (dateStr: string) => {
+    const direct = getEventsByDate(dateStr);
+    const recurring = getRecurringInstances(state.events, dateStr);
+    const multiDay = state.events.filter(e =>
+      e.endDate !== e.date && dateStr >= e.date && dateStr <= e.endDate
+    );
+    let all = [...direct, ...recurring, ...multiDay];
+
+    if (state.searchQuery) {
+      all = all.filter(e =>
+        e.title.includes(state.searchQuery) || e.note.includes(state.searchQuery)
+      );
+    }
+    if (state.filterTag !== 'all') {
+      all = all.filter(e => e.tag === state.filterTag);
+    }
+    return all;
+  }, [state.events, state.searchQuery, state.filterTag, getEventsByDate]);
 
   const handleDayClick = (dateStr: string) => {
     dispatch({ type: 'SET_DATE', payload: dateStr });
@@ -32,7 +47,7 @@ export default function MonthView() {
       <div className={styles.grid}>
         {grid.map((day) => {
           const dateStr = formatDate(day);
-          const events = getEventsByDate(dateStr);
+          const events = getDayEvents(dateStr);
           const isCurrentMonth = day.month() === currentMonth.month();
           const todayFlag = isToday(day);
           const maxDots = 3;
@@ -49,7 +64,7 @@ export default function MonthView() {
               <div className={styles.dots}>
                 {events.slice(0, maxDots).map((ev) => (
                   <span
-                    key={ev.id}
+                    key={ev.id + (('_instanceDate' in ev) ? (ev as any)._instanceDate : dateStr)}
                     className={styles.dot}
                     style={{ background: TAG_CONFIG[ev.tag].color }}
                   />

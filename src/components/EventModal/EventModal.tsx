@@ -1,7 +1,28 @@
 import { useEffect, useRef, useState } from 'react';
-import { TAG_CONFIG } from '../../types';
-import type { TagColor, Event } from '../../types';
+import { TAG_CONFIG, RECURRENCE_LABELS, REMINDER_OPTIONS } from '../../types';
+import type { TagColor, RecurrenceType, Event } from '../../types';
 import styles from './EventModal.module.css';
+
+interface EventModalProps {
+  date: string;
+  startTime?: string;
+  event?: Event | null;
+  onSave: (data: {
+    id?: string;
+    title: string;
+    date: string;
+    startTime: string;
+    endTime: string;
+    tag: TagColor;
+    note: string;
+    isAllDay: boolean;
+    endDate: string;
+    recurrence: { type: RecurrenceType; interval: number };
+    reminderMinutes: number;
+  }) => void;
+  onDelete?: (id: string) => void;
+  onClose: () => void;
+}
 
 function addHourToTime(time: string): string {
   const [h, m] = time.split(':').map(Number);
@@ -11,23 +32,6 @@ function addHourToTime(time: string): string {
   return String(newH).padStart(2, '0') + ':' + String(newM).padStart(2, '0');
 }
 
-interface EventModalProps {
-  date: string;
-  startTime?: string;
-  event?: Event | null;   // null = create, Event = edit
-  onSave: (data: {
-    id?: string;
-    title: string;
-    date: string;
-    startTime: string;
-    endTime: string;
-    tag: TagColor;
-    note: string;
-  }) => void;
-  onDelete?: (id: string) => void;
-  onClose: () => void;
-}
-
 export default function EventModal({ date, startTime, event, onSave, onDelete, onClose }: EventModalProps) {
   const [title, setTitle] = useState(event?.title ?? '');
   const [evDate, setEvDate] = useState(event?.date ?? date);
@@ -35,6 +39,11 @@ export default function EventModal({ date, startTime, event, onSave, onDelete, o
   const [evEnd, setEvEnd] = useState(event?.endTime ?? addHourToTime(startTime ?? '09:00'));
   const [tag, setTag] = useState<TagColor>(event?.tag ?? 'gray');
   const [note, setNote] = useState(event?.note ?? '');
+  const [isAllDay, setIsAllDay] = useState(event?.isAllDay ?? false);
+  const [endDate, setEndDate] = useState(event?.endDate ?? event?.date ?? date);
+  const [recurType, setRecurType] = useState<RecurrenceType>(event?.recurrence?.type ?? 'none');
+  const [recurInterval, setRecurInterval] = useState(event?.recurrence?.interval ?? 1);
+  const [reminder, setReminder] = useState(event?.reminderMinutes ?? 0);
 
   const titleRef = useRef<HTMLInputElement>(null);
   const isEdit = !!event;
@@ -58,10 +67,14 @@ export default function EventModal({ date, startTime, event, onSave, onDelete, o
       id: event?.id,
       title: title.trim(),
       date: evDate,
-      startTime: evStart,
-      endTime: evEnd,
+      startTime: isAllDay ? '00:00' : evStart,
+      endTime: isAllDay ? '23:59' : evEnd,
       tag,
       note: note.trim(),
+      isAllDay,
+      endDate: endDate,
+      recurrence: { type: recurType, interval: recurInterval },
+      reminderMinutes: reminder,
     });
   };
 
@@ -78,8 +91,8 @@ export default function EventModal({ date, startTime, event, onSave, onDelete, o
         </div>
         <form onSubmit={handleSubmit}>
           <div className={styles.body}>
+            {/* 标题 */}
             <div className={styles.field}>
-              <label className={styles.label}>标题</label>
               <input
                 ref={titleRef}
                 className={styles.input}
@@ -91,42 +104,69 @@ export default function EventModal({ date, startTime, event, onSave, onDelete, o
               />
             </div>
 
+            {/* 全天开关 */}
+            <label className={styles.checkLabel}>
+              <input
+                type="checkbox"
+                checked={isAllDay}
+                onChange={(e) => setIsAllDay(e.target.checked)}
+              />
+              <span>全天事件</span>
+            </label>
+
+            {/* 日期 */}
             <div className={styles.row}>
               <div className={styles.field}>
-                <label className={styles.label}>日期</label>
+                <label className={styles.label}>开始日期</label>
                 <input
                   className={styles.input}
                   type="date"
                   value={evDate}
-                  onChange={(e) => setEvDate(e.target.value)}
+                  onChange={(e) => { setEvDate(e.target.value); setEndDate(e.target.value); }}
                   required
                 />
               </div>
+              {(isAllDay && endDate !== evDate) || isAllDay ? (
+                <div className={styles.field}>
+                  <label className={styles.label}>结束日期</label>
+                  <input
+                    className={styles.input}
+                    type="date"
+                    value={endDate}
+                    min={evDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                  />
+                </div>
+              ) : null}
             </div>
 
-            <div className={styles.row}>
-              <div className={styles.field}>
-                <label className={styles.label}>开始</label>
-                <input
-                  className={styles.input}
-                  type="time"
-                  value={evStart}
-                  onChange={(e) => setEvStart(e.target.value)}
-                  required
-                />
+            {/* 时间（非全天时显示） */}
+            {!isAllDay && (
+              <div className={styles.row}>
+                <div className={styles.field}>
+                  <label className={styles.label}>开始</label>
+                  <input
+                    className={styles.input}
+                    type="time"
+                    value={evStart}
+                    onChange={(e) => setEvStart(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className={styles.field}>
+                  <label className={styles.label}>结束</label>
+                  <input
+                    className={styles.input}
+                    type="time"
+                    value={evEnd}
+                    onChange={(e) => setEvEnd(e.target.value)}
+                    required
+                  />
+                </div>
               </div>
-              <div className={styles.field}>
-                <label className={styles.label}>结束</label>
-                <input
-                  className={styles.input}
-                  type="time"
-                  value={evEnd}
-                  onChange={(e) => setEvEnd(e.target.value)}
-                  required
-                />
-              </div>
-            </div>
+            )}
 
+            {/* 标签 */}
             <div className={styles.field}>
               <label className={styles.label}>标签</label>
               <div className={styles.tagList}>
@@ -150,6 +190,53 @@ export default function EventModal({ date, startTime, event, onSave, onDelete, o
               </div>
             </div>
 
+            {/* 重复 */}
+            <div className={styles.field}>
+              <label className={styles.label}>重复</label>
+              <div className={styles.recurRow}>
+                <select
+                  className={styles.select}
+                  value={recurType}
+                  onChange={(e) => setRecurType(e.target.value as RecurrenceType)}
+                >
+                  {(Object.entries(RECURRENCE_LABELS) as [RecurrenceType, string][]).map(([k, v]) => (
+                    <option key={k} value={k}>{v}</option>
+                  ))}
+                </select>
+                {recurType !== 'none' && (
+                  <div className={styles.intervalRow}>
+                    <span className={styles.intervalLabel}>每</span>
+                    <input
+                      className={styles.intervalInput}
+                      type="number"
+                      min={1}
+                      max={99}
+                      value={recurInterval}
+                      onChange={(e) => setRecurInterval(Math.max(1, parseInt(e.target.value) || 1))}
+                    />
+                    <span className={styles.intervalLabel}>
+                      {recurType === 'daily' ? '天' : recurType === 'weekly' ? '周' : '月'}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* 提醒 */}
+            <div className={styles.field}>
+              <label className={styles.label}>提醒</label>
+              <select
+                className={styles.select}
+                value={reminder}
+                onChange={(e) => setReminder(parseInt(e.target.value))}
+              >
+                {REMINDER_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* 备注 */}
             <div className={styles.field}>
               <label className={styles.label}>备注</label>
               <textarea
@@ -157,28 +244,20 @@ export default function EventModal({ date, startTime, event, onSave, onDelete, o
                 placeholder="添加备注..."
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
-                rows={3}
+                rows={2}
               />
             </div>
           </div>
 
           <div className={styles.footer}>
             {isEdit && onDelete && (
-              <button
-                type="button"
-                className={styles.deleteBtn}
-                onClick={() => onDelete(event!.id)}
-              >
+              <button type="button" className={styles.deleteBtn} onClick={() => onDelete(event!.id)}>
                 删除
               </button>
             )}
             <div className={styles.spacer} />
-            <button type="button" className={styles.cancelBtn} onClick={onClose}>
-              取消
-            </button>
-            <button type="submit" className={styles.saveBtn}>
-              {isEdit ? '保存' : '创建'}
-            </button>
+            <button type="button" className={styles.cancelBtn} onClick={onClose}>取消</button>
+            <button type="submit" className={styles.saveBtn}>{isEdit ? '保存' : '创建'}</button>
           </div>
         </form>
       </div>

@@ -6,6 +6,8 @@ const initialState: AppState = {
   events: [],
   currentView: 'day',
   currentDate: today(),
+  searchQuery: '',
+  filterTag: 'all',
 };
 
 function reducer(state: AppState, action: AppAction): AppState {
@@ -24,10 +26,19 @@ function reducer(state: AppState, action: AppAction): AppState {
         ...state,
         events: state.events.filter((e) => e.id !== action.payload),
       };
+    case 'DELETE_EVENTS':
+      return {
+        ...state,
+        events: state.events.filter((e) => !action.payload.includes(e.id)),
+      };
     case 'SET_VIEW':
       return { ...state, currentView: action.payload };
     case 'SET_DATE':
       return { ...state, currentDate: action.payload };
+    case 'SET_SEARCH':
+      return { ...state, searchQuery: action.payload };
+    case 'SET_FILTER_TAG':
+      return { ...state, filterTag: action.payload };
     default:
       return state;
   }

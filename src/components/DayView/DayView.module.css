@@ -186,6 +186,12 @@
   white-space: nowrap;
 }
 
+.recurBadge {
+  margin-left: 4px;
+  font-size: 10px;
+  opacity: .7;
+}
+
 .deleteBtn {
   width: 26px;
   height: 26px;
