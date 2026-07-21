@@ -23,8 +23,24 @@ export default function DayView({ onEditEvent, onCreateEvent }: DayViewProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const lastScrollY = useRef(0);
 
+  const currentDayjs = parseDate(state.currentDate);
   const isToday = state.currentDate === today();
-  const dateLabel = isToday ? '今天' : parseDate(state.currentDate).format('M月D日 ddd');
+  const dateLabel = isToday ? '今天' : currentDayjs.format('M月D日 ddd');
+  // Breadcrumb: "2026年7月 · 第30周"
+  const breadcrumb = `${currentDayjs.format('YYYY年M月')} · 第${currentDayjs.isoWeek()}周`;
+
+  // Live preview of quick-add
+  const quickPreview = useMemo(() => {
+    if (!quickText.trim()) return null;
+    const parsed = parseQuickAdd(quickText.trim());
+    if (!parsed || parsed.title === quickText.trim()) return null;
+    const d = parseDate(parsed.date);
+    const displayDate = d.isSame(currentDayjs, 'day') ? '今天' :
+      d.isSame(currentDayjs.add(1, 'day'), 'day') ? '明天' :
+      d.isSame(currentDayjs.subtract(1, 'day'), 'day') ? '昨天' :
+      d.format('M月D日 ddd');
+    return `→ ${displayDate} ${parsed.startTime}–${parsed.endTime}  ${parsed.title}`;
+  }, [quickText, currentDayjs]);
 
   useEffect(() => {
     const container = document.querySelector('[data-scroll]');
@@ -140,7 +156,13 @@ export default function DayView({ onEditEvent, onCreateEvent }: DayViewProps) {
           <button className={styles.quickAddBtn} onClick={handleQuickAdd}>{parsing ? '...' : '添加'}</button>
         )}
       </div>
+      {/* Live preview */}
+      {quickPreview && (
+        <div className={styles.preview}>{quickPreview}</div>
+      )}
 
+      {/* Breadcrumb */}
+      <div className={styles.breadcrumb}>{breadcrumb}</div>
       <div className={styles.dateHeader}>
         <span className={styles.dateEmoji}>📅</span>
         <span className={styles.dateLabel}>{dateLabel}</span>

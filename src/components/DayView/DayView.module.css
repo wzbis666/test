@@ -62,12 +62,32 @@
   background: var(--color-primary-hover);
 }
 
+/* — live preview — */
+.preview {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  padding: 4px 16px 0;
+  animation: itemIn .2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* — breadcrumb — */
+.breadcrumb {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  padding: 18px 4px 0;
+  font-weight: 500;
+  letter-spacing: .01em;
+}
+
 /* — date header — */
 .dateHeader {
   display: flex;
   align-items: baseline;
   gap: 8px;
-  padding: 24px 4px 16px;
+  padding: 4px 4px 16px;
 }
 .dateEmoji { font-size: 20px; }
 .dateLabel {

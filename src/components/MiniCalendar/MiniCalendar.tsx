@@ -9,20 +9,21 @@ export default function MiniCalendar() {
   const grid = getMonthGrid(currentDate);
   const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
 
-  const daysWithEvents = useMemo(() => {
-    const set = new Set<string>();
+  const dayEventCounts = useMemo(() => {
+    const map = new Map<string, number>();
     state.events.forEach((e) => {
-      set.add(e.date);
+      map.set(e.date, (map.get(e.date) || 0) + 1);
       if (e.endDate !== e.date) {
         let d = parseDate(e.date);
         const end = parseDate(e.endDate);
         while (d.isBefore(end) || d.isSame(end, 'day')) {
-          set.add(formatDate(d));
+          const ds = formatDate(d);
+          map.set(ds, (map.get(ds) || 0) + 1);
           d = d.add(1, 'day');
         }
       }
     });
-    return set;
+    return map;
   }, [state.events]);
 
   const goPrevMonth = () => {
@@ -56,7 +57,7 @@ export default function MiniCalendar() {
           const isCurrentMonth = day.month() === currentDate.month();
           const isTodayFlag = isToday(day);
           const isSelected = isSameDay(day, currentDate);
-          const hasEvents = daysWithEvents.has(dateStr);
+          const count = dayEventCounts.get(dateStr) || 0;
 
           return (
             <button
@@ -65,7 +66,7 @@ export default function MiniCalendar() {
               onClick={() => handleDayClick(dateStr)}
             >
               <span className={styles.dayNum}>{day.date()}</span>
-              {hasEvents && <span className={styles.dot} />}
+              {count > 0 && <span className={`${styles.badge} ${isSelected ? styles.badgeSelected : ''}`}>{count}</span>}
             </button>
           );
         })}
