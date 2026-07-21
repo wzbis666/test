@@ -2,8 +2,8 @@
   position: absolute;
   left: 2px;
   right: 2px;
-  background: var(--tag-bg);
-  border: 1px solid var(--tag-border);
+  background: var(--tag-bg, #E5EFFF);
+  border: 1px solid var(--tag-border, #C5D8FC);
   border-radius: var(--radius-sm);
   padding: 7px 10px;
   cursor: pointer;
