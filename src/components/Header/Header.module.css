@@ -20,16 +20,12 @@
   letter-spacing: -0.02em;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
 }
-.logo::before {
-  content: '';
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border-radius: 5px;
-  background: var(--color-primary);
-  opacity: .12;
+
+.logoIcon {
+  flex-shrink: 0;
+  color: var(--color-primary);
 }
 
 .left {

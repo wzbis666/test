@@ -381,8 +381,8 @@
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background: var(--color-primary);
-  box-shadow: var(--shadow-lg);
+  background: var(--accent-gradient);
+  box-shadow: 0 4px 20px rgba(232, 168, 64, .35);
   z-index: 50;
   transition: transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .2s ease, opacity .3s ease;
   display: flex;

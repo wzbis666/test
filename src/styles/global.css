@@ -37,6 +37,10 @@
   --color-primary: #3D3929;
   --color-primary-hover: #1A1814;
   --color-primary-light: rgba(61, 57, 41, 0.06);
+  --accent: #E8A840;
+  --accent-hover: #D4952E;
+  --accent-light: rgba(232, 168, 64, 0.12);
+  --accent-gradient: linear-gradient(135deg, #E8A840, #D4793B);
 
   /* — time-of-day atmosphere — */
   --dawn-start: #FFF8F0;
@@ -176,6 +180,10 @@ input, textarea, select {
   --color-primary: #D5CBB5;
   --color-primary-hover: #EBE4D4;
   --color-primary-light: rgba(213, 203, 181, 0.1);
+  --accent: #F0B84C;
+  --accent-hover: #F5C96E;
+  --accent-light: rgba(240, 184, 76, 0.15);
+  --accent-gradient: linear-gradient(135deg, #F0B84C, #E8964A);
 
   --dawn-start: #2A2418;
   --dawn-end: transparent;
