@@ -83,7 +83,12 @@
 
 /* — event list — */
 .list { flex: 1; display: flex; flex-direction: column; }
-.section { margin-bottom: 16px; }
+.section { margin-bottom: 16px; padding: 8px 10px; border-radius: var(--radius-md); }
+/* morning: warm dawn tint */
+.section:nth-of-type(1) { background: linear-gradient(135deg, var(--dawn-start), var(--dawn-end)); }
+/* evening: cool dusk tint */
+.section:last-child { background: linear-gradient(135deg, var(--dusk-start), var(--dusk-end)); }
+
 .sectionHeader {
   display: flex;
   align-items: center;
@@ -209,19 +214,56 @@
   color: var(--color-red);
 }
 
+/* — all-day banner — */
+.eventItem[class*="全天"] .eventTime,
+.allDayBanner {
+  background: var(--color-primary-light);
+  border-radius: 20px;
+  padding: 2px 10px;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+/* — ongoing now indicator — */
+.nowIndicator {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-green);
+  box-shadow: 0 0 0 3px rgba(48, 164, 108, .2);
+  animation: nowPulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+  align-self: center;
+  margin-right: -4px;
+}
+
+@keyframes nowPulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(48, 164, 108, .2); }
+  50% { box-shadow: 0 0 0 7px rgba(48, 164, 108, .08); }
+}
+
 /* — empty state — */
 .empty {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 48px 24px;
+  padding: 64px 24px;
   text-align: center;
   animation: itemIn .4s ease backwards;
+  position: relative;
 }
-.emptyIcon { font-size: 48px; margin-bottom: 16px; }
-.emptyTitle { font-size: var(--font-size-lg); font-weight: 600; color: var(--color-text); margin-bottom: 6px; }
-.emptyHint { font-size: var(--font-size-sm); color: var(--color-text-muted); max-width: 260px; }
+.empty::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 30%, var(--color-primary-light), transparent 70%);
+  border-radius: var(--radius-xl);
+  opacity: .5;
+}
+.emptyIcon { font-size: 56px; margin-bottom: 20px; filter: grayscale(.3); }
+.emptyTitle { font-size: var(--font-size-lg); font-weight: 600; color: var(--color-text); margin-bottom: 6px; position: relative; }
+.emptyHint { font-size: var(--font-size-sm); color: var(--color-text-muted); max-width: 260px; position: relative; }
 
 /* — FAB — */
 .fab {

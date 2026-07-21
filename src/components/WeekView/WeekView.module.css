@@ -25,6 +25,15 @@
 .column.today {
   background: var(--color-today);
 }
+/* weekend subtle tint */
+.column:nth-child(6),
+.column:nth-child(7) {
+  background: linear-gradient(180deg, var(--color-surface), transparent 40%);
+}
+.column.today:nth-child(6),
+.column.today:nth-child(7) {
+  background: var(--color-today);
+}
 
 .columnHeader {
   display: flex;

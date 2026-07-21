@@ -90,6 +90,19 @@ export default function DayView({ onEditEvent, onCreateEvent }: DayViewProps) {
     }, 250);
   }, [deleteEvent]);
 
+  const isHappeningNow = (event: Event) => {
+    if (event.isAllDay) return false;
+    const now = new Date();
+    const todayStr = now.toISOString().slice(0, 10);
+    if (event.date !== todayStr) return false;
+    const nowMin = now.getHours() * 60 + now.getMinutes();
+    const [sh, sm] = event.startTime.split(':').map(Number);
+    const [eh, em] = event.endTime.split(':').map(Number);
+    const startMin = sh! * 60 + sm!;
+    const endMin = eh! * 60 + em!;
+    return nowMin >= startMin && nowMin < endMin;
+  };
+
   const handleDetailAdd = () => onCreateEvent(state.currentDate);
 
   const morning = filteredTimed.filter(e => e.startTime < '12:00');
@@ -164,6 +177,7 @@ export default function DayView({ onEditEvent, onCreateEvent }: DayViewProps) {
                         </>
                       )}
                     </div>
+                    {isHappeningNow(event) && <span className={styles.nowIndicator} />}
                     <span className={styles.tagIcon}>{TAG_CONFIG[event.tag].icon}</span>
                     <div className={styles.eventBody}>
                       <span className={styles.eventTitle}>

@@ -38,6 +38,12 @@
   --color-primary-hover: #1A1814;
   --color-primary-light: rgba(61, 57, 41, 0.06);
 
+  /* — time-of-day atmosphere — */
+  --dawn-start: #FFF8F0;
+  --dawn-end: transparent;
+  --dusk-start: transparent;
+  --dusk-end: #F5F3FF;
+
   /* — radius — */
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -170,6 +176,11 @@ input, textarea, select {
   --color-primary: #D5CBB5;
   --color-primary-hover: #EBE4D4;
   --color-primary-light: rgba(213, 203, 181, 0.1);
+
+  --dawn-start: #2A2418;
+  --dawn-end: transparent;
+  --dusk-start: transparent;
+  --dusk-end: #1E1D2A;
 
   /* tag bg dimmed */
   --color-red-bg: rgba(229, 72, 77, .12);

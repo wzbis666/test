@@ -83,6 +83,7 @@
 .day.today {
   font-weight: 700;
   color: var(--color-primary);
+  background: radial-gradient(circle, var(--color-primary-light) 0%, transparent 70%);
 }
 .day.selected {
   background: var(--color-primary);
