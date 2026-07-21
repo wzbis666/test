@@ -86,6 +86,8 @@
 }
 .compact .title {
   font-size: var(--font-size-xs);
+  font-weight: 700;
+  color: var(--color-text);
 }
 .compact .tagIcon {
   font-size: 11px;
