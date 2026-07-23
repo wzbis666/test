@@ -1,0 +1,23 @@
+.container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.fish {
+  position: absolute;
+  height: auto;
+  animation: swim var(--duration, 30s) var(--delay, 0s) ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes swim {
+  0%   { left: -10%; transform: translateY(0) scaleX(1); }
+  25%  { transform: translateY(-15px) scaleX(1); }
+  50%  { left: 105%; transform: translateY(0) scaleX(1); }
+  51%  { transform: translateY(0) scaleX(-1); }
+  75%  { transform: translateY(10px) scaleX(-1); }
+  100% { left: -10%; transform: translateY(0) scaleX(-1); }
+}

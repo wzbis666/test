@@ -13,7 +13,7 @@ import WeekView from './components/WeekView/WeekView';
 import MonthView from './components/MonthView/MonthView';
 import EventModal from './components/EventModal/EventModal';
 import MiniCalendar from './components/MiniCalendar/MiniCalendar';
-import Bubbles from './components/Bubbles/Bubbles';
+import FishSwim from './components/FishSwim';
 import ToastContainer, { showToast } from './components/Toast/Toast';
 import type { Event, TagColor, ViewType, RecurrenceType } from './types';
 
@@ -210,7 +210,7 @@ function AppInner() {
 
   return (
     <div className={`app-shell period-${timeOfDay}`} onClick={handleRipple}>
-      <Bubbles />
+      <FishSwim />
       <Header theme={theme} onToggleTheme={toggleTheme} onExport={handleExport} onImport={handleImport} />
       <div className="main-layout">
         <MiniCalendar />
