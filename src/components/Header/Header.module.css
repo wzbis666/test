@@ -20,12 +20,26 @@
   letter-spacing: -0.02em;
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 0;
 }
 
-.logoIcon {
-  flex-shrink: 0;
-  color: var(--color-primary);
+.logoImg {
+  height: 22px;
+  width: auto;
+  display: block;
+}
+
+.logoDivider {
+  color: var(--color-border);
+  margin: 0 8px;
+  font-weight: 300;
+  font-size: 14px;
+}
+
+.logoText {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  font-weight: 500;
 }
 
 .left {

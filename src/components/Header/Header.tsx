@@ -40,16 +40,9 @@ export default function Header({ theme, onToggleTheme, onExport, onImport }: Hea
     <header className={styles.header}>
       <div className={styles.left}>
         <h1 className={styles.logo}>
-          <svg className={styles.logoIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <rect x="2" y="3" width="16" height="15" rx="3" stroke="currentColor" strokeWidth="1.5"/>
-            <path d="M2 8h16" stroke="currentColor" strokeWidth="1.5"/>
-            <line x1="6" y1="1" x2="6" y2="5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-            <line x1="14" y1="1" x2="14" y2="5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-            <circle cx="7" cy="12" r="1.2" fill="var(--accent)"/>
-            <circle cx="10" cy="12" r="1.2" fill="var(--accent)"/>
-            <rect x="6.5" y="14.5" width="3" height="2" rx="1" fill="var(--accent)"/>
-          </svg>
-          PROYA 日程
+          <img src="/proya-logo.png" alt="珀莱雅" className={styles.logoImg} />
+          <span className={styles.logoDivider}>|</span>
+          <span className={styles.logoText}>日程管理</span>
         </h1>
         <div className={styles.actions}>
           <button className={styles.iconBtn} onClick={onToggleTheme} title={theme === 'light' ? '暗黑模式' : '浅色模式'}>
