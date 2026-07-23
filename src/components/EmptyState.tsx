@@ -15,6 +15,8 @@ export default function EmptyState() {
       <LottieEmptyState showLottie />
       {/* Ocean scene */}
       <svg width="200" height="160" viewBox="0 0 200 160" fill="none" style={{ marginBottom: 20 }}>
+        {/* Water surface shimmer */}
+        <motion.rect x="0" y="0" width="200" height="160" rx="16" fill="var(--color-surface)" opacity=".5" />
         {/* Floating calendar */}
         <motion.g
           animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
