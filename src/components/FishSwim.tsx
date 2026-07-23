@@ -1,13 +1,15 @@
 import { useEffect, useRef } from 'react';
 import styles from './FishSwim.module.css';
 
-/**
- * 复刻珀莱雅官网鱼群效果。
- * JS 定时微调 left/top，CSS transition 平滑过渡。
- */
 const FISH = [
-  { src: '/fish-2.png', size: 340, baseLeft: -4, baseBottom: 2,  range: 20, opacity: .35 },
-  { src: '/fish-1.png', size: 360, baseRight: -4, baseTop: 3,   range: 20, opacity: .32 },
+  // 左下角鱼群
+  { src: '/fish-2.png', size: 220, left: -3, bottom: 8,  transit: 2.0, opacity: .28 },
+  { src: '/fish-3.png', size: 180, left: -1, bottom: 18, transit: 2.8, opacity: .22 },
+  { src: '/fish-1.png', size: 300, left: -6, bottom: 5,  transit: 3.2, opacity: .30 },
+  // 右上角鱼群
+  { src: '/fish-1.png', size: 250, right: -3, top: 8,   transit: 2.4, opacity: .28 },
+  { src: '/fish-2.png', size: 200, right: -1, top: 18,  transit: 3.0, opacity: .22 },
+  { src: '/fish-3.png', size: 320, right: -5, top: 4,   transit: 2.6, opacity: .30 },
 ];
 
 export default function FishSwim() {
@@ -16,8 +18,7 @@ export default function FishSwim() {
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-
-    const fishData: { img: HTMLImageElement; baseLeft?: number; baseBottom?: number; baseRight?: number; baseTop?: number; range: number }[] = [];
+    const fishData: { img: HTMLImageElement; left?: number; right?: number; top?: number; bottom?: number }[] = [];
 
     FISH.forEach((f) => {
       const img = document.createElement('img');
@@ -25,33 +26,39 @@ export default function FishSwim() {
       img.className = styles.fish;
       img.style.width = f.size + 'px';
       img.style.opacity = String(f.opacity);
-      if (f.baseLeft !== undefined) {
-        img.style.left = f.baseLeft + '%';
-        img.style.bottom = f.baseBottom + '%';
+      img.style.transitionDuration = f.transit + 's';
+      if (f.left !== undefined) {
+        img.style.left = f.left + '%';
+        img.style.bottom = f.bottom + '%';
       } else {
-        img.style.right = f.baseRight + '%';
-        img.style.top = f.baseTop + '%';
+        img.style.right = f.right + '%';
+        img.style.top = f.top + '%';
       }
       container.appendChild(img);
-      fishData.push({ img, baseLeft: f.baseLeft, baseBottom: f.baseBottom, baseRight: f.baseRight, baseTop: f.baseTop, range: f.range });
+      fishData.push({ img, left: f.left, right: f.right, top: f.top, bottom: f.bottom });
     });
 
-    // Drift loop: every 2-3s, nudge position within range
     const intervals: ReturnType<typeof setInterval>[] = [];
-    fishData.forEach(({ img, baseLeft, baseBottom, baseRight, baseTop, range }) => {
+    fishData.forEach(({ img, left, right, top, bottom }) => {
+      const baseLeft = left;
+      const baseRight = right;
+      const baseTop = top;
+      const baseBottom = bottom;
+      const range = 2.5; // percent drift range
+
       const drift = () => {
-        const dx = (Math.random() - 0.5) * range * 2;
-        const dy = (Math.random() - 0.5) * range * 2;
+        const dx = (Math.random() - 0.5) * range;
+        const dy = (Math.random() - 0.5) * range;
         if (baseLeft !== undefined) {
-          img.style.left = (baseLeft + dx / 10) + '%';
-          img.style.bottom = (baseBottom! + dy / 10) + '%';
+          img.style.left = (baseLeft + dx) + '%';
+          img.style.bottom = (baseBottom! + dy) + '%';
         } else {
-          img.style.right = (baseRight! + dx / 10) + '%';
-          img.style.top = (baseTop! + dy / 10) + '%';
+          img.style.right = (baseRight! + dx) + '%';
+          img.style.top = (baseTop! + dy) + '%';
         }
       };
       drift();
-      const id = setInterval(drift, 2000 + Math.random() * 2000);
+      const id = setInterval(drift, 1500 + Math.random() * 2500);
       intervals.push(id);
     });
 

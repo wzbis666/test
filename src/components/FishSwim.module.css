@@ -9,7 +9,7 @@
 .fish {
   position: absolute;
   height: auto;
-  transition: left 1.5s ease-in-out, top 1.5s ease-in-out, right 1.5s ease-in-out, bottom 1.5s ease-in-out;
-  will-change: left, top;
+  transition: left var(--transit, 2s) ease-in-out, top var(--transit, 2s) ease-in-out, right var(--transit, 2s) ease-in-out, bottom var(--transit, 2s) ease-in-out;
+  will-change: left, top, right, bottom;
   filter: url("#water-ripple");
 }
