@@ -6,6 +6,7 @@ import { useEvents } from './hooks/useEvents';
 import { useTheme } from './hooks/useTheme';
 import { useTimeOfDay } from './hooks/useTimeOfDay';
 import { today as todayStr } from './utils/date';
+import { generateId } from './utils/id';
 import { scheduleNotification, cancelNotification, requestNotificationPermission } from './utils/notifications';
 import Header from './components/Header/Header';
 import DayView from './components/DayView/DayView';
@@ -50,11 +51,13 @@ function AppInner() {
 
   // Detect ocean background image
   useEffect(() => {
+    let cancelled = false;
     const img = new Image();
     img.onload = () => {
-      document.querySelector('.app-shell')?.classList.add('has-ocean-bg');
+      if (!cancelled) document.querySelector('.app-shell')?.classList.add('has-ocean-bg');
     };
     img.src = '/ocean-bg.webp';
+    return () => { cancelled = true; img.onload = null; };
   }, []);
 
   useEffect(() => {
@@ -92,12 +95,16 @@ function AppInner() {
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        const imported = JSON.parse(e.target?.result as string);
+        const result = e.target?.result;
+        if (typeof result !== 'string') return;
+        const imported = JSON.parse(result);
         if (!Array.isArray(imported)) throw new Error('格式错误');
         // Merge: add imported events with new IDs to avoid conflicts
-        const merged = imported.map((ev: any) => ({
+        // Runtime validation: JSON.parse returns unknown; we trust the shape for import
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const merged = (imported as any[]).map((ev: any) => ({
           ...ev,
-          id: ev.id || crypto.randomUUID(),
+          id: ev.id || generateId(),
           createdAt: ev.createdAt || Date.now(),
           updatedAt: Date.now(),
           isAllDay: ev.isAllDay ?? false,
@@ -132,7 +139,7 @@ function AppInner() {
       tag: TagColor; note: string; isAllDay: boolean; endDate: string;
       recurrence: { type: RecurrenceType; interval: number }; reminderMinutes: number }) => {
       if (data.id) {
-        updateEvent(data as Parameters<typeof updateEvent>[0]);
+        updateEvent({ ...data, id: data.id });
       } else {
         createEvent(data);
       }

@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion';
-import LottieEmptyState from './LottieEmptyState';
 
 export default function EmptyState() {
   return (
@@ -11,8 +10,6 @@ export default function EmptyState() {
         position: 'relative', overflow: 'hidden',
       }}
     >
-      {/* Lottie ocean layer (if file exists) */}
-      <LottieEmptyState showLottie />
       {/* Ocean scene */}
       <svg width="200" height="160" viewBox="0 0 200 160" fill="none" style={{ marginBottom: 20 }}>
         {/* Floating calendar */}

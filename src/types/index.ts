@@ -38,7 +38,6 @@ export type AppAction =
   | { type: 'ADD_EVENT'; payload: Event }
   | { type: 'UPDATE_EVENT'; payload: Event }
   | { type: 'DELETE_EVENT'; payload: string }
-  | { type: 'DELETE_EVENTS'; payload: string[] }
   | { type: 'SET_VIEW'; payload: ViewType }
   | { type: 'SET_DATE'; payload: string }
   | { type: 'SET_SEARCH'; payload: string }

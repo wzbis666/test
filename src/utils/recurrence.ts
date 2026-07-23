@@ -26,6 +26,10 @@ export function matchesRecurrence(
 
   // 不展开开始日期之前的
   if (target.isBefore(start, 'day')) return false;
+  // 不展开结束日期之后的
+  if (event.endDate && event.endDate !== event.date) {
+    if (target.isAfter(dayjs(event.endDate), 'day')) return false;
+  }
 
   const diffDays = target.diff(start, 'day');
 

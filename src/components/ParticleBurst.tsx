@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 interface ParticleBurstProps {
   origin: { x: number; y: number };
@@ -27,30 +27,24 @@ export default function ParticleBurst({ origin, onDone }: ParticleBurstProps) {
   }, [onDone]);
 
   return (
-    <AnimatePresence>
+    <>
       {particles.map((p) => (
         <motion.div
           key={p.id}
-          initial={{
-            x: origin.x, y: origin.y, scale: 0, opacity: 1,
-          }}
+          initial={{ x: origin.x, y: origin.y, scale: 0, opacity: 1 }}
           animate={{
             x: origin.x + Math.cos(p.angle * Math.PI / 180) * p.distance,
             y: origin.y + Math.sin(p.angle * Math.PI / 180) * p.distance,
             scale: 1, opacity: 0,
           }}
-          exit={{ opacity: 0 }}
           transition={{ duration: p.duration, ease: 'easeOut' }}
           style={{
-            position: 'fixed',
-            width: p.size, height: p.size,
-            borderRadius: '50%',
-            background: p.color,
-            pointerEvents: 'none',
-            zIndex: 999,
+            position: 'fixed', width: p.size, height: p.size,
+            borderRadius: '50%', background: p.color,
+            pointerEvents: 'none', zIndex: 999,
           }}
         />
       ))}
-    </AnimatePresence>
+    </>
   );
 }

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useAppContext } from '../../context/AppContext';
 import { parseDate, formatDate, getMonthGrid, isToday, isSameDay } from '../../utils/date';
+import { getRecurringInstances } from '../../utils/recurrence';
 import Icon from '../Icon';
 import styles from './MiniCalendar.module.css';
 
@@ -24,8 +25,14 @@ export default function MiniCalendar() {
         }
       }
     });
+    // Include recurring instances for visible grid dates
+    grid.forEach((day) => {
+      const ds = formatDate(day);
+      const instances = getRecurringInstances(state.events, ds);
+      map.set(ds, (map.get(ds) || 0) + instances.length);
+    });
     return map;
-  }, [state.events]);
+  }, [state.events, grid]);
 
   const goPrevMonth = () => {
     dispatch({ type: 'SET_DATE', payload: currentDate.subtract(1, 'month').format('YYYY-MM-DD') });

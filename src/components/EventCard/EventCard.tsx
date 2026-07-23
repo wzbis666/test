@@ -1,3 +1,4 @@
+import React from 'react';
 import { TAG_CONFIG } from '../../types';
 import type { Event } from '../../types';
 import { timeToMinutes } from '../../utils/date';
@@ -12,7 +13,7 @@ interface EventCardProps {
   onDragStart?: (e: React.DragEvent, event: Event) => void;
 }
 
-export default function EventCard({ event, onClick, style, compact = false, onDragStart }: EventCardProps) {
+export default React.memo(function EventCard({ event, onClick, style, compact = false, onDragStart }: EventCardProps) {
   const tag = TAG_CONFIG[event.tag];
   const duration = timeToMinutes(event.endTime) - timeToMinutes(event.startTime);
 
@@ -37,4 +38,4 @@ export default function EventCard({ event, onClick, style, compact = false, onDr
       <span className={styles.tagIcon}><Icon name={tag.icon} size={12} /></span>
     </div>
   );
-}
+});

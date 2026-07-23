@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Briefcase, Flame, MessageSquare, Home, Heart, Pin,
   Sun, CloudSun, Moon, CalendarDays, Sparkles,
@@ -24,8 +25,8 @@ interface IconProps {
   style?: React.CSSProperties;
 }
 
-export default function Icon({ name, size = 16, className, style }: IconProps) {
+export default React.memo(function Icon({ name, size = 16, className, style }: IconProps) {
   const Comp = map[name];
   if (!Comp) return <span className={className}>?</span>;
   return <Comp size={size} className={className} style={style} strokeWidth={2} />;
-}
+});

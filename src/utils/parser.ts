@@ -5,6 +5,7 @@ export interface ParsedEvent {
   date: string;       // YYYY-MM-DD
   startTime: string;   // HH:mm
   endTime: string;     // HH:mm
+  isAllDay: boolean;    // 是否为全天事件
 }
 
 /**
@@ -28,6 +29,7 @@ export function parseQuickAdd(input: string): ParsedEvent | null {
   let dateStr = dayjs().format('YYYY-MM-DD');
   let startTime = '09:00';
   let endTime = '10:00';
+  let isAllDay = false;
   let title = trimmed;
 
   // —— date patterns ——
@@ -79,7 +81,7 @@ export function parseQuickAdd(input: string): ParsedEvent | null {
     startTime = pad(timeRangeMatch[1]!) + ':' + timeRangeMatch[2]!;
     endTime = pad(timeRangeMatch[3]!) + ':' + timeRangeMatch[4]!;
     title = title.replace(timeRangeMatch[0], '').trim();
-    return { title, date: dateStr, startTime, endTime };
+    return { title, date: dateStr, startTime, endTime, isAllDay };
   }
 
   // "下午3点" or "下午3点半" or "下午三点" or "下午3:30" or "3pm" style
@@ -126,8 +128,9 @@ export function parseQuickAdd(input: string): ParsedEvent | null {
 
   // "全天" or "整天"
   if (title.includes('全天') || title.includes('整天')) {
-    startTime = '09:00';
-    endTime = '18:00';
+    isAllDay = true;
+    startTime = '00:00';
+    endTime = '23:59';
     title = title.replace(/[全整]天/, '').trim();
   }
 
@@ -136,5 +139,5 @@ export function parseQuickAdd(input: string): ParsedEvent | null {
 
   if (!title) title = '未命名日程';
 
-  return { title, date: dateStr, startTime, endTime };
+  return { title, date: dateStr, startTime, endTime, isAllDay };
 }

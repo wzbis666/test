@@ -61,7 +61,7 @@ export default function DayView({ onEditEvent, onCreateEvent }: DayViewProps) {
   const allDayEvents = useMemo(() => {
     const direct = getEventsByDate(state.currentDate).filter(e => e.isAllDay);
     const recurring = getRecurringInstances(state.events, state.currentDate).filter(e => e.isAllDay);
-    const multiDay = state.events.filter(e => !e.isAllDay && e.endDate !== e.date && state.currentDate >= e.date && state.currentDate <= e.endDate);
+    const multiDay = state.events.filter(e => e.isAllDay && e.endDate !== e.date && state.currentDate >= e.date && state.currentDate <= e.endDate);
     return [...direct, ...recurring, ...multiDay].sort((a, b) => a.title.localeCompare(b.title));
   }, [state.events, state.currentDate, getEventsByDate]);
 
@@ -102,7 +102,7 @@ export default function DayView({ onEditEvent, onCreateEvent }: DayViewProps) {
     const parsed = parseQuickAdd(text);
     if (parsed) {
       setParsing(true);
-      createEvent({ ...parsed, tag: 'gray', note: '' });
+      createEvent({ ...parsed, tag: 'gray', note: '', isAllDay: parsed.isAllDay });
       setQuickText('');
       setTimeout(() => setParsing(false), 600);
     }

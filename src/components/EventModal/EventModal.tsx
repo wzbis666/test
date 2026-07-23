@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { TAG_CONFIG, RECURRENCE_LABELS, REMINDER_OPTIONS } from '../../types';
 import type { TagColor, RecurrenceType, Event } from '../../types';
 import Icon from '../Icon';
@@ -63,7 +63,7 @@ export default function EventModal({ date, startTime, event, onSave, onDelete, o
 
   const timeError = !isAllDay && evStart >= evEnd;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
     if (timeError) return;
@@ -80,11 +80,11 @@ export default function EventModal({ date, startTime, event, onSave, onDelete, o
       recurrence: { type: recurType, interval: recurInterval },
       reminderMinutes: reminder,
     });
-  };
+  }, [title, evDate, evStart, evEnd, tag, note, isAllDay, endDate, recurType, recurInterval, reminder, timeError, onSave, event?.id]);
 
-  const handleBackdrop = (e: React.MouseEvent) => {
+  const handleBackdrop = useCallback((e: React.MouseEvent) => {
     if (e.target === e.currentTarget) onClose();
-  };
+  }, [onClose]);
 
   return (
     <div className={styles.backdrop} onClick={handleBackdrop}>
@@ -113,7 +113,7 @@ export default function EventModal({ date, startTime, event, onSave, onDelete, o
               <input
                 type="checkbox"
                 checked={isAllDay}
-                onChange={(e) => setIsAllDay(e.target.checked)}
+                onChange={(e) => { setIsAllDay(e.target.checked); if (!e.target.checked) setEndDate(evDate); }}
               />
               <span className={styles.toggle} />
               <span>全天事件</span>

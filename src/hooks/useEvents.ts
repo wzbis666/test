@@ -84,7 +84,11 @@ export function useEvents() {
     (date: string) => {
       return state.events
         .filter((e) => e.date === date)
-        .sort((a, b) => a.startTime.localeCompare(b.startTime));
+        .sort((a, b) => {
+          const [ah, am] = a.startTime.split(':').map(Number);
+          const [bh, bm] = b.startTime.split(':').map(Number);
+          return (ah! * 60 + am!) - (bh! * 60 + bm!);
+        });
     },
     [state.events]
   );

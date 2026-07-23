@@ -17,7 +17,7 @@ export default function MonthView() {
     const direct = getEventsByDate(dateStr);
     const recurring = getRecurringInstances(state.events, dateStr);
     const multiDay = state.events.filter(e =>
-      e.endDate !== e.date && dateStr >= e.date && dateStr <= e.endDate
+      !e.isAllDay && e.endDate !== e.date && dateStr >= e.date && dateStr <= e.endDate
     );
     let all = [...direct, ...recurring, ...multiDay];
 
