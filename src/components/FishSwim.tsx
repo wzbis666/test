@@ -7,8 +7,8 @@ import styles from './FishSwim.module.css';
  * 通过 SVG filter 添加水波纹扭曲效果。
  */
 const FISH = [
-  { src: '/fish-1.png', size: 200, top: '5%',  left: '-3%',  driftX: 20, driftY: -12, driftY2: 8,  duration: 7,  delay: 0,  opacity: .22 },
-  { src: '/fish-3.png', size: 170, top: 'auto', bottom: '10%', right: '-4%', left: 'auto', driftX: -18, driftY: -10, driftY2: 6, duration: 8, delay: 2, opacity: .20 },
+  { src: '/fish-2.png', size: 220, top: 'auto', bottom: '3%', left: '-2%', right: 'auto', driftX: 22, driftY: -14, driftY2: 10, duration: 7, delay: 0, opacity: .35 },
+  { src: '/fish-1.png', size: 240, top: '4%', left: 'auto', bottom: 'auto', right: '-3%', driftX: -20, driftY: -12, driftY2: 8, duration: 8, delay: 2, opacity: .32 },
 ];
 
 export default function FishSwim() {
@@ -25,10 +25,12 @@ export default function FishSwim() {
       img.src = f.src;
       img.className = styles.fish;
       img.style.width = f.size + 'px';
-      img.style.top = f.top;
-      img.style.left = f.left;
+      if (f.top !== 'auto') img.style.top = f.top;
+      if (f.left !== 'auto') img.style.left = f.left;
       if (f.bottom) img.style.bottom = f.bottom;
       if (f.right) img.style.right = f.right;
+      if (f.top === 'auto') img.style.top = 'auto';
+      if (f.left === 'auto') img.style.left = 'auto';
       img.style.opacity = String(f.opacity);
       img.style.setProperty('--duration', f.duration + 's');
       img.style.setProperty('--delay', f.delay + 's');
@@ -48,7 +50,7 @@ export default function FishSwim() {
       <svg style={{ position: 'absolute', width: 0, height: 0 }}>
         <filter id="water-ripple" x="-20%" y="-20%" width="140%" height="140%">
           <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="2" result="noise" />
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="6" xChannelSelector="R" yChannelSelector="G" />
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="10" xChannelSelector="R" yChannelSelector="G" />
         </filter>
       </svg>
     </div>
