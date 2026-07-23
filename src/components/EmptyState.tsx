@@ -1,8 +1,6 @@
 import { motion } from 'framer-motion';
 import LottieEmptyState from './LottieEmptyState';
 
-const fishPath = "M0,0 C2,-3 5,-3 7,-1 C9,1 5,3 3,2 C1,1 0,0 0,0Z";
-
 export default function EmptyState() {
   return (
     <motion.div
@@ -33,18 +31,6 @@ export default function EmptyState() {
           <circle cx="80" cy="55" r="3" fill="var(--accent)" />
           <circle cx="95" cy="69" r="3" fill="var(--color-primary)" />
         </motion.g>
-        {/* Fish 1 */}
-        <motion.g
-          animate={{ x: [0, 30, 0] }} transition={{ repeat: Infinity, duration: 6, ease: 'easeInOut' }}
-        >
-          <path d={fishPath} transform="translate(40, 110) scale(1.2)" fill="var(--accent)" opacity=".4" />
-        </motion.g>
-        {/* Fish 2 */}
-        <motion.g
-          animate={{ x: [0, -25, 0] }} transition={{ repeat: Infinity, duration: 5, ease: 'easeInOut', delay: 2 }}
-        >
-          <path d={fishPath} transform="translate(170, 125) scale(-1, 1) scale(0.8)" fill="var(--color-primary)" opacity=".3" />
-        </motion.g>
         {/* Seabed */}
         <motion.path
           d="M0,142 C30,135 60,148 90,140 C120,132 150,145 180,138 L200,140 L200,160 L0,160Z"
@@ -56,9 +42,6 @@ export default function EmptyState() {
           ] }}
           transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
         />
-        {/* Shells on seabed */}
-        <circle cx="50" cy="148" r="4" fill="var(--accent)" opacity=".5" />
-        <circle cx="150" cy="145" r="3" fill="var(--color-primary)" opacity=".4" />
         {/* Bubbles rising */}
         {[1, 2, 3].map((i) => (
           <motion.circle
