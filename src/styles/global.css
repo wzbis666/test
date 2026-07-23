@@ -122,6 +122,60 @@ body::before {
   to { background-position-x: 1200px; }
 }
 
+/* — water ripple on click — */
+.ripple-target {
+  position: relative;
+  overflow: hidden;
+}
+.ripple-target::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(13, 123, 137, .15);
+  width: 20px; height: 20px;
+  top: var(--ripple-y, 50%); left: var(--ripple-x, 50%);
+  transform: translate(-50%, -50%) scale(0);
+  pointer-events: none;
+}
+.ripple-target.rippling::after {
+  animation: rippleAnim .6s ease-out forwards;
+}
+@keyframes rippleAnim {
+  to { transform: translate(-50%, -50%) scale(30); opacity: 0; }
+}
+
+/* — glass morphism — */
+.glass {
+  background: rgba(246, 249, 251, .55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(13, 123, 137, .08);
+}
+[data-theme="dark"] .glass {
+  background: rgba(15, 26, 30, .6);
+  border-color: rgba(76, 184, 196, .08);
+}
+
+/* — elastic overscroll — */
+[data-scroll] {
+  overscroll-behavior-y: contain;
+  scroll-behavior: smooth;
+}
+
+/* — time-of-day ambient tint — */
+.period-dawn { --color-bg: #F8F6F3; }
+.period-noon { --color-bg: #F6F9FB; }
+.period-dusk { --color-bg: #F9F5F2; }
+.period-night { --color-bg: #F0F4F8; }
+[data-theme="dark"] .period-dawn { --color-bg: #141E22; }
+[data-theme="dark"] .period-noon { --color-bg: #0F1A1E; }
+[data-theme="dark"] .period-dusk { --color-bg: #15191E; }
+[data-theme="dark"] .period-night { --color-bg: #0D1820; }
+
+.app-shell {
+  transition: background .3s ease;
+}
+
 button {
   font-family: inherit;
   cursor: pointer;

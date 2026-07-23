@@ -4,6 +4,7 @@ import { AppProvider, useAppContext } from './context/AppContext';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useEvents } from './hooks/useEvents';
 import { useTheme } from './hooks/useTheme';
+import { useTimeOfDay } from './hooks/useTimeOfDay';
 import { today as todayStr } from './utils/date';
 import { scheduleNotification, cancelNotification, requestNotificationPermission } from './utils/notifications';
 import Header from './components/Header/Header';
@@ -27,6 +28,7 @@ function AppInner() {
   const { state, dispatch } = useAppContext();
   const { createEvent, updateEvent, deleteEvent, events } = useEvents();
   const { theme, toggle: toggleTheme } = useTheme();
+  const timeOfDay = useTimeOfDay();
   const [modal, setModal] = useState<ModalState>({
     open: false,
     date: todayStr(),
@@ -178,6 +180,17 @@ function AppInner() {
     return () => window.removeEventListener('keydown', handleKey);
   }, [modal.open, state.currentDate, state.currentView, openCreate, dispatch]);
 
+  // Water ripple on click
+  const handleRipple = (e: React.MouseEvent) => {
+    const target = (e.target as HTMLElement).closest('.ripple-target') as HTMLElement;
+    if (!target) return;
+    const rect = target.getBoundingClientRect();
+    target.style.setProperty('--ripple-x', (e.clientX - rect.left) + 'px');
+    target.style.setProperty('--ripple-y', (e.clientY - rect.top) + 'px');
+    target.classList.add('rippling');
+    setTimeout(() => target.classList.remove('rippling'), 600);
+  };
+
   const renderView = () => {
     switch (state.currentView) {
       case 'day': return <DayView onEditEvent={openEdit} onCreateEvent={openCreate} />;
@@ -187,7 +200,7 @@ function AppInner() {
   };
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell period-${timeOfDay}`} onClick={handleRipple}>
       <Bubbles />
       <Header theme={theme} onToggleTheme={toggleTheme} onExport={handleExport} onImport={handleImport} />
       <div className="main-layout">

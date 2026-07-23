@@ -9,6 +9,7 @@ import { TAG_CONFIG } from '../../types';
 import type { Event } from '../../types';
 import Icon from '../Icon';
 import EmptyState from '../EmptyState';
+import ParticleBurst from '../ParticleBurst';
 import styles from './DayView.module.css';
 
 interface DayViewProps {
@@ -23,6 +24,7 @@ export default function DayView({ onEditEvent, onCreateEvent }: DayViewProps) {
   const [parsing, setParsing] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [fabVisible, setFabVisible] = useState(true);
+  const [burst, setBurst] = useState<{ x: number; y: number } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const lastScrollY = useRef(0);
 
@@ -117,7 +119,12 @@ export default function DayView({ onEditEvent, onCreateEvent }: DayViewProps) {
 
   const handleToggleComplete = useCallback((e: React.MouseEvent, event: Event) => {
     e.stopPropagation();
-    updateEvent({ ...event, completed: !event.completed });
+    const willComplete = !event.completed;
+    updateEvent({ ...event, completed: willComplete });
+    if (willComplete) {
+      const rect = (e.target as HTMLElement).getBoundingClientRect();
+      setBurst({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
+    }
   }, [updateEvent]);
 
   const handleDetailAdd = () => onCreateEvent(state.currentDate);
@@ -199,7 +206,7 @@ export default function DayView({ onEditEvent, onCreateEvent }: DayViewProps) {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, x: 40, height: 0, marginBottom: 0, paddingTop: 0, paddingBottom: 0, overflow: 'hidden' }}
                       transition={{ type: 'spring', stiffness: 500, damping: 45, mass: 1, delay: i * 0.02 }}
-                      className={`${styles.eventItem} ${event.completed ? styles.completed : ''} ${hasConflict ? styles.conflict : ''} ${isDeleting ? styles.slideOut : ''}`}
+                      className={`${styles.eventItem} glass ripple-target ${event.completed ? styles.completed : ''} ${hasConflict ? styles.conflict : ''} ${isDeleting ? styles.slideOut : ''}`}
                       onClick={() => onEditEvent(event)}
                     >
                       <span className={styles.dragHandle}><Icon name="grip-vertical" size={12} /></span>
@@ -248,6 +255,7 @@ export default function DayView({ onEditEvent, onCreateEvent }: DayViewProps) {
         <Icon name="plus" size={24} className={styles.fabIcon} />
         <span className={styles.ripple} />
       </motion.button>
+      {burst && <ParticleBurst origin={burst} onDone={() => setBurst(null)} />}
     </div>
   );
 }
