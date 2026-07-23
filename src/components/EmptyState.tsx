@@ -15,8 +15,6 @@ export default function EmptyState() {
       <LottieEmptyState showLottie />
       {/* Ocean scene */}
       <svg width="200" height="160" viewBox="0 0 200 160" fill="none" style={{ marginBottom: 20 }}>
-        {/* Water surface shimmer */}
-        <motion.rect x="0" y="0" width="200" height="160" rx="16" fill="var(--color-surface)" opacity=".5" />
         {/* Floating calendar */}
         <motion.g
           animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
@@ -31,17 +29,6 @@ export default function EmptyState() {
           <circle cx="80" cy="55" r="3" fill="var(--accent)" />
           <circle cx="95" cy="69" r="3" fill="var(--color-primary)" />
         </motion.g>
-        {/* Seabed */}
-        <motion.path
-          d="M0,142 C30,135 60,148 90,140 C120,132 150,145 180,138 L200,140 L200,160 L0,160Z"
-          fill="var(--color-surface)" opacity=".8"
-          animate={{ d: [
-            "M0,142 C30,135 60,148 90,140 C120,132 150,145 180,138 L200,140 L200,160 L0,160Z",
-            "M0,140 C30,147 60,133 90,142 C120,150 150,136 180,144 L200,140 L200,160 L0,160Z",
-            "M0,142 C30,135 60,148 90,140 C120,132 150,145 180,138 L200,140 L200,160 L0,160Z",
-          ] }}
-          transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
-        />
         {/* Bubbles rising */}
         {[1, 2, 3].map((i) => (
           <motion.circle
