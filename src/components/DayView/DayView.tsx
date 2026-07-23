@@ -8,6 +8,7 @@ import { getRecurringInstances, formatRecurrence } from '../../utils/recurrence'
 import { TAG_CONFIG } from '../../types';
 import type { Event } from '../../types';
 import Icon from '../Icon';
+import EmptyState from '../EmptyState';
 import styles from './DayView.module.css';
 
 interface DayViewProps {
@@ -176,11 +177,7 @@ export default function DayView({ onEditEvent, onCreateEvent }: DayViewProps) {
 
       <div className={styles.list}>
         {totalCount === 0 ? (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={styles.empty}>
-            <Icon name="sparkles" size={44} className={styles.emptyIcon} />
-            <p className={styles.emptyTitle}>今天还没有日程</p>
-            <p className={styles.emptyHint}>在上方输入框快速创建，或点击右下角 + 添加</p>
-          </motion.div>
+          <EmptyState />
         ) : (
           <AnimatePresence>
             {sections.map(section => (

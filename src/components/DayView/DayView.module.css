@@ -23,7 +23,7 @@
 }
 .quickAdd:focus-within {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-light);
+  box-shadow: 0 0 0 3px var(--color-primary-light), 0 0 20px rgba(13, 123, 137, .06);
 }
 
 .quickAddIcon {
@@ -134,6 +134,8 @@
 .eventItem:hover {
   background: var(--color-surface);
   border-color: var(--color-border);
+  box-shadow: 0 2px 12px rgba(13, 123, 137, .06);
+  transform: translateX(2px);
 }
 
 /* Conflict */
