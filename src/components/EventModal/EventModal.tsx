@@ -61,9 +61,12 @@ export default function EventModal({ date, startTime, event, onSave, onDelete, o
     return () => window.removeEventListener('keydown', handleKey);
   }, [onClose]);
 
+  const timeError = !isAllDay && evStart >= evEnd;
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
+    if (timeError) return;
     onSave({
       id: event?.id,
       title: title.trim(),
@@ -166,6 +169,10 @@ export default function EventModal({ date, startTime, event, onSave, onDelete, o
                   />
                 </div>
               </div>
+            )}
+
+            {timeError && (
+              <div className={styles.error}>结束时间必须晚于开始时间</div>
             )}
 
             {/* 标签 */}

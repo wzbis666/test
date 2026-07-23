@@ -231,6 +231,15 @@
   border-color: var(--color-primary);
 }
 
+.error {
+  color: var(--color-red);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  padding: 6px 10px;
+  background: var(--color-red-bg);
+  border-radius: var(--radius-sm);
+}
+
 .footer {
   display: flex;
   align-items: center;
