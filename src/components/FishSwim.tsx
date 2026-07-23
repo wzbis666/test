@@ -7,8 +7,8 @@ import styles from './FishSwim.module.css';
  * 通过 SVG filter 添加水波纹扭曲效果。
  */
 const FISH = [
-  { src: '/fish-2.png', size: 220, top: 'auto', bottom: '3%', left: '-2%', right: 'auto', driftX: 22, driftY: -14, driftY2: 10, duration: 7, delay: 0, opacity: .35 },
-  { src: '/fish-1.png', size: 240, top: '4%', left: 'auto', bottom: 'auto', right: '-3%', driftX: -20, driftY: -12, driftY2: 8, duration: 8, delay: 2, opacity: .32 },
+  { src: '/fish-2.png', size: 340, top: 'auto', bottom: '2%', left: '-4%', right: 'auto', driftX: 30, driftY: -18, driftY2: 14, duration: 7, delay: 0, opacity: .35 },
+  { src: '/fish-1.png', size: 360, top: '3%', left: 'auto', bottom: 'auto', right: '-4%', driftX: -28, driftY: -16, driftY2: 12, duration: 8, delay: 2, opacity: .32 },
 ];
 
 export default function FishSwim() {
