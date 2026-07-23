@@ -1,15 +1,15 @@
 {
-  "name": "DayPlan · 轻日程",
-  "short_name": "DayPlan",
-  "description": "极简日程管理工具 — 打开即用，数据本地存储",
+  "name": "珀莱雅 · 日程管理",
+  "short_name": "PROYA日程",
+  "description": "珀莱雅内部员工日程管理工具",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#FBFAF7",
-  "theme_color": "#3D3929",
+  "background_color": "#F6F9FB",
+  "theme_color": "#0D7B89",
   "orientation": "any",
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%233D3929'/><text y='.7em' font-size='60' text-anchor='middle' x='50'>📅</text></svg>",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230D7B89'/><rect x='20' y='25' width='60' height='55' rx='8' fill='none' stroke='%23E8976B' stroke-width='3'/><line x1='20' y1='40' x2='80' y2='40' stroke='%23E8976B' stroke-width='3'/><line x1='34' y1='14' x2='34' y2='29' stroke='%23E8976B' stroke-width='3' stroke-linecap='round'/><line x1='66' y1='14' x2='66' y2='29' stroke='%23E8976B' stroke-width='3' stroke-linecap='round'/></svg>",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"

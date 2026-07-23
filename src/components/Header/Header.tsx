@@ -49,7 +49,7 @@ export default function Header({ theme, onToggleTheme, onExport, onImport }: Hea
             <circle cx="10" cy="12" r="1.2" fill="var(--accent)"/>
             <rect x="6.5" y="14.5" width="3" height="2" rx="1" fill="var(--accent)"/>
           </svg>
-          DayPlan
+          PROYA 日程
         </h1>
         <div className={styles.actions}>
           <button className={styles.iconBtn} onClick={onToggleTheme} title={theme === 'light' ? '暗黑模式' : '浅色模式'}>
