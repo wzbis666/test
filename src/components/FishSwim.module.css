@@ -9,15 +9,15 @@
 .fish {
   position: absolute;
   height: auto;
-  animation: swim var(--duration, 30s) var(--delay, 0s) ease-in-out infinite;
+  animation: sway var(--duration, 6s) var(--delay, 0s) ease-in-out infinite;
   will-change: transform;
+  filter: url("#water-ripple");
 }
 
-@keyframes swim {
-  0%   { left: -10%; transform: translateY(0) scaleX(1); }
-  25%  { transform: translateY(-15px) scaleX(1); }
-  50%  { left: 105%; transform: translateY(0) scaleX(1); }
-  51%  { transform: translateY(0) scaleX(-1); }
-  75%  { transform: translateY(10px) scaleX(-1); }
-  100% { left: -10%; transform: translateY(0) scaleX(-1); }
+@keyframes sway {
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  25%  { transform: translate(var(--drift-x, 15px), var(--drift-y, -10px)) rotate(2deg); }
+  50%  { transform: translate(0, var(--drift-y2, 5px)) rotate(0deg); }
+  75%  { transform: translate(calc(var(--drift-x, 15px) * -0.5), var(--drift-y, -10px)) rotate(-2deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
 }
