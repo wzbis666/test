@@ -48,6 +48,15 @@ function AppInner() {
     }
   }, []);
 
+  // Detect ocean background image
+  useEffect(() => {
+    const img = new Image();
+    img.onload = () => {
+      document.querySelector('.app-shell')?.classList.add('has-ocean-bg');
+    };
+    img.src = '/ocean-bg.webp';
+  }, []);
+
   useEffect(() => {
     requestNotificationPermission();
   }, []);

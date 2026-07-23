@@ -63,6 +63,7 @@
 
   /* — typography — */
   --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  --font-brand: "Noto Serif SC", "Songti SC", "SimSun", serif;
   --font-size-xs: 11px;
   --font-size-sm: 12px;
   --font-size-base: 14px;
@@ -174,6 +175,19 @@ body::before {
 
 .app-shell {
   transition: background .3s ease;
+}
+
+/* — ocean photo background — applies when ocean-bg.webp exists — */
+.app-shell.has-ocean-bg {
+  position: relative;
+}
+.app-shell.has-ocean-bg::before {
+  content: '';
+  position: fixed; inset: 0;
+  background: url('/ocean-bg.webp') center/cover no-repeat;
+  opacity: .06;
+  pointer-events: none;
+  z-index: 0;
 }
 
 button {

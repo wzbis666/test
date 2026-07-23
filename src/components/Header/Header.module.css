@@ -17,10 +17,11 @@
   font-weight: 700;
   color: var(--color-primary);
   white-space: nowrap;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
   display: flex;
   align-items: center;
   gap: 0;
+  font-family: var(--font-brand);
 }
 
 .logoImg {

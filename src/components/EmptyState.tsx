@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import LottieEmptyState from './LottieEmptyState';
 
 const fishPath = "M0,0 C2,-3 5,-3 7,-1 C9,1 5,3 3,2 C1,1 0,0 0,0Z";
 
@@ -12,6 +13,8 @@ export default function EmptyState() {
         position: 'relative', overflow: 'hidden',
       }}
     >
+      {/* Lottie ocean layer (if file exists) */}
+      <LottieEmptyState showLottie />
       {/* Ocean scene */}
       <svg width="200" height="160" viewBox="0 0 200 160" fill="none" style={{ marginBottom: 20 }}>
         {/* Water surface shimmer */}
