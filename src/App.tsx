@@ -85,7 +85,7 @@ function AppInner() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `dayplan-export-${todayStr()}.json`;
+    a.download = `light-schedule-export-${todayStr()}.json`;
     a.click();
     URL.revokeObjectURL(url);
   }, [events]);
@@ -264,7 +264,7 @@ function getNextDate(current: string, view: ViewType): string {
 }
 
 export default function App() {
-  const [events] = useLocalStorage<Event[]>('dayplan-events', []);
+  const [events] = useLocalStorage<Event[]>('light-schedule-events', []);
   return (
     <AppProvider initialEvents={events}>
       <SyncEvents />
@@ -275,7 +275,7 @@ export default function App() {
 
 function SyncEvents() {
   const { state } = useAppContext();
-  const [, setEvents] = useLocalStorage<Event[]>('dayplan-events', []);
+  const [, setEvents] = useLocalStorage<Event[]>('light-schedule-events', []);
   useEffect(() => { setEvents(state.events); }, [state.events, setEvents]);
   return null;
 }

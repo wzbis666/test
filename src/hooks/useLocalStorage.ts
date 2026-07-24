@@ -7,7 +7,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
       if (!item) return initialValue;
       const parsed = JSON.parse(item) as T;
       // Basic structural validation
-      if (key === 'dayplan-events' && !Array.isArray(parsed)) {
+      if (key === 'light-schedule-events' && !Array.isArray(parsed)) {
         console.warn('Corrupted events data, resetting');
         return initialValue;
       }

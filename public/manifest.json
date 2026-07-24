@@ -1,7 +1,7 @@
 {
-  "name": "珀莱雅 · 日程管理",
-  "short_name": "PROYA日程",
-  "description": "珀莱雅内部员工日程管理工具",
+  "name": "轻日程",
+  "short_name": "轻日程",
+  "description": "极简本地日程管理工具",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#F6F9FB",

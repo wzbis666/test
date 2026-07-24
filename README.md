@@ -1,4 +1,4 @@
-# 📅 DayPlan · 轻日程
+# 📅 轻日程
 
 极简、开箱即用的网页版日程管理工具。打开浏览器即用，数据存储在浏览器本地，无需注册登录。
 
@@ -11,7 +11,7 @@
 
 ## 🌐 在线体验
 
-👉 **[dayplan.vercel.app](https://test-omega-inky-39.vercel.app/)**
+👉 **[light-schedule.vercel.app](https://test-omega-inky-39.vercel.app/)**
 
 ## ✨ 功能
 

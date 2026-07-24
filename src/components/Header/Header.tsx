@@ -40,9 +40,9 @@ export default function Header({ theme, onToggleTheme, onExport, onImport }: Hea
     <header className={styles.header}>
       <div className={styles.left}>
         <h1 className={styles.logo}>
-          <img src="/proya-logo.png" alt="珀莱雅" className={styles.logoImg} />
+          <img src="/proya-logo.png" alt="轻日程" className={styles.logoImg} />
           <span className={styles.logoDivider}>|</span>
-          <span className={styles.logoText}>日程管理</span>
+          <span className={styles.logoText}>珀莱雅 · 轻日程</span>
         </h1>
         <div className={styles.actions}>
           <button className={styles.iconBtn} onClick={onToggleTheme} title={theme === 'light' ? '暗黑模式' : '浅色模式'}>

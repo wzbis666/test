@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 type Theme = 'light' | 'dark';
 
 function getInitialTheme(): Theme {
-  const stored = localStorage.getItem('dayplan-theme') as Theme | null;
+  const stored = localStorage.getItem('light-schedule-theme') as Theme | null;
   if (stored === 'light' || stored === 'dark') return stored;
   if (window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
   return 'light';
@@ -14,7 +14,7 @@ export function useTheme() {
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('dayplan-theme', theme);
+    localStorage.setItem('light-schedule-theme', theme);
   }, [theme]);
 
   const toggle = useCallback(() => {
